@@ -5,1076 +5,1718 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Codete</title>
-
+<link rel="icon" href="https://raw.githubusercontent.com/CodeteAI/Codete/refs/heads/main/favicon.ico">
 <style>
 :root {
-  --bg: #09070f;
-  --panel: #151020;
-  --border: #302347;
-  --text: #f1ecfa;
-  --muted: #a69bbd;
-  --purple: #a78bfa;
-  --purple2: #7c3aed;
-  --purple3: #c4b5fd;
-  --red: #ff525c;
-  --redbg: #2b1018;
+    --bg: #090711;
+    --panel: #100c1c;
+    --panel2: #171025;
+    --purple: #9d62ff;
+    --purple2: #6d35ca;
+    --purple3: #c3a2ff;
+    --text: #eee9f7;
+    --muted: #a29ab5;
+    --border: rgba(167, 112, 255, .19);
+    --error: #ff444f;
 }
 
-* { box-sizing: border-box; }
+* {
+    box-sizing: border-box;
+}
 
 body {
-  margin: 0;
-  height: 100vh;
-  overflow: hidden;
-  color: var(--text);
-  background:
-    radial-gradient(ellipse at 15% 10%, #25113e66, transparent 40%),
-    radial-gradient(ellipse at 90% 90%, #30134a44, transparent 45%),
-    var(--bg);
-  font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
+    margin: 0;
+    font-family: Inter, Segoe UI, Arial, sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(ellipse at 15% 0%, rgba(102, 47, 190, .17), transparent 45%),
+        radial-gradient(ellipse at 90% 90%, rgba(69, 27, 130, .13), transparent 50%),
+        var(--bg);
+    min-height: 100vh;
+    overflow: hidden;
 }
 
-body::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  background: radial-gradient(circle at 50% 0%, #8b5cf612, transparent 50%);
+button, textarea, input, select {
+    font: inherit;
+}
+
+button {
+    cursor: pointer;
+    color: var(--text);
 }
 
 #app {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
+    display: flex;
+    height: 100vh;
+    height: 100dvh;
 }
 
-/* HEADER */
+/* SIDEBAR */
 
-header {
-  height: 76px;
-  padding: 0 25px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  border-bottom: 1px solid #ffffff08;
-  background: #0d0915cc;
-  backdrop-filter: blur(14px);
-  z-index: 5;
+.sidebar {
+    width: 250px;
+    min-width: 250px;
+    background: rgba(12, 9, 20, .94);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    padding: 20px 14px;
+    transition: transform .25s;
 }
 
 .brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 8px 10px 25px;
+    font-size: 20px;
+    font-weight: 750;
+    letter-spacing: .3px;
 }
 
-.brandName {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -.7px;
+.brand-icon {
+    width: 38px;
+    height: 38px;
 }
 
-.brandName span { color: var(--purple); }
-
-.headerRight {
-  display: flex;
-  align-items: center;
-  gap: 12px;
+.new-chat {
+    border: 1px solid var(--border);
+    background: linear-gradient(135deg, rgba(140, 72, 255, .22), rgba(80, 40, 130, .1));
+    padding: 13px;
+    border-radius: 13px;
+    text-align: left;
+    transition: .2s;
 }
 
-#model, #accountBtn {
-  color: var(--text);
-  background: var(--panel);
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 14px;
+.new-chat:hover {
+    border-color: var(--purple);
+    background: rgba(137, 76, 255, .2);
 }
 
-#accountBtn { cursor: pointer; }
-
-/* ANIMATED ^^ ICON */
-
-.faceLogo {
-  width: 44px;
-  height: 44px;
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 14px;
-  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
-  box-shadow: 0 0 22px #8b5cf633;
-  transition: transform .25s, box-shadow .25s;
-  animation: logoFloat 4s ease-in-out infinite;
+.sidebar-label {
+    color: var(--muted);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1.4px;
+    margin: 25px 8px 12px;
 }
 
-.faceLogo:hover {
-  transform: translateY(-3px) scale(1.07);
-  box-shadow: 0 0 35px #a78bfa88;
+.sidebar-footer {
+    margin-top: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
 }
 
-.face {
-  display: flex;
-  gap: 3px;
-  align-items: center;
-  transform: translateY(-1px);
+.sidebar-btn {
+    border: 1px solid transparent;
+    background: transparent;
+    padding: 12px;
+    text-align: left;
+    border-radius: 10px;
+    color: var(--muted);
 }
 
-.eye {
-  width: 7px;
-  height: 13px;
-  border-radius: 5px;
-  background: #fff;
-  transform: rotate(-12deg);
-  animation: eyeWiggle 3s ease-in-out infinite;
+.sidebar-btn:hover {
+    background: var(--panel2);
+    color: var(--text);
+    border-color: var(--border);
 }
 
-.eye:nth-child(2) {
-  transform: rotate(12deg);
-  animation-delay: .15s;
+.account-info {
+    border-top: 1px solid var(--border);
+    padding: 15px 8px 5px;
+    margin-top: 12px;
+    color: var(--muted);
+    font-size: 12px;
+    overflow-wrap: anywhere;
 }
 
-.faceLogo:hover .eye {
-  animation: eyeBounce .35s ease-in-out infinite alternate;
+.account-plan {
+    margin-top: 5px;
+    color: var(--purple3);
 }
 
-@keyframes logoFloat {
-  0%,100% { transform: translateY(0); }
-  50% { transform: translateY(-3px); }
+/* MAIN */
+
+.main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    position: relative;
 }
 
-@keyframes eyeWiggle {
-  0%,100% { transform: rotate(-12deg); }
-  50% { transform: rotate(-5deg) translateY(-1px); }
+.topbar {
+    min-height: 68px;
+    border-bottom: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 24px;
+    background: rgba(10, 7, 17, .65);
+    backdrop-filter: blur(15px);
+    z-index: 2;
 }
 
-@keyframes eyeBounce {
-  from { transform: translateY(0) rotate(-12deg); }
-  to { transform: translateY(-3px) rotate(-12deg); }
+.topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 13px;
 }
 
-.miniLogo {
-  width: 27px;
-  height: 27px;
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 9px;
-  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
-  box-shadow: 0 0 12px #8b5cf622;
-  flex-shrink: 0;
+.topbar-title {
+    font-size: 15px;
+    font-weight: 650;
 }
 
-.miniFace {
-  display: flex;
-  gap: 2px;
-  align-items: center;
+.model-select {
+    background: var(--panel2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 9px 12px;
+    color: var(--text);
+    outline: none;
 }
 
-.miniEye {
-  width: 4px;
-  height: 8px;
-  border-radius: 4px;
-  background: white;
-  animation: miniWiggle 2.5s ease-in-out infinite;
+.model-select:focus {
+    border-color: var(--purple);
 }
 
-.miniEye:nth-child(2) {
-  animation-delay: .12s;
+.status {
+    color: var(--muted);
+    font-size: 12px;
 }
 
-@keyframes miniWiggle {
-  0%,100% { transform: rotate(-10deg); }
-  50% { transform: rotate(-3deg) translateY(-1px); }
-}
-
-.miniLogo:hover {
-  transform: rotate(-5deg) scale(1.12);
-  box-shadow: 0 0 18px #a78bfa66;
+.menu-button {
+    display: none;
+    background: transparent;
+    border: 0;
+    font-size: 20px;
 }
 
 /* CHAT */
 
-#chat {
-  flex: 1;
-  overflow-y: auto;
-  padding: 30px 5%;
-  scroll-behavior: smooth;
+.chat {
+    flex: 1;
+    overflow-y: auto;
+    scroll-behavior: smooth;
+    padding: 32px 0;
 }
 
-#chat::-webkit-scrollbar { width: 8px; }
-#chat::-webkit-scrollbar-thumb {
-  background: #35234c;
-  border-radius: 20px;
+.chat-inner {
+    max-width: 1000px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 30px;
 }
 
-#empty {
-  position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -40%);
-  text-align: center;
-  width: 90%;
-  max-width: 600px;
+.welcome {
+    min-height: 65vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    gap: 18px;
 }
 
-.emptyLogo {
-  margin: 0 auto 22px;
-  width: 76px;
-  height: 76px;
-  border-radius: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
-  box-shadow: 0 0 40px #8b5cf633;
+.welcome-icon {
+    width: 95px;
+    height: 95px;
+    filter: drop-shadow(0 0 25px rgba(154, 87, 255, .32));
 }
 
-.emptyLogo .eye {
-  width: 11px;
-  height: 20px;
+.welcome h1 {
+    font-size: 36px;
+    margin: 0;
+    letter-spacing: -1px;
+    background: linear-gradient(90deg, #e4d4ff, #a16aff, #e4d4ff);
+    background-clip: text;
+    -webkit-background-clip: text;
+    color: transparent;
 }
 
-#empty h1 {
-  font-size: 35px;
-  letter-spacing: -1px;
-  margin-bottom: 10px;
-}
-
-#empty p { color: var(--muted); }
-
-/* MESSAGE ALIGNMENT */
-
-.messageRow {
-  display: flex;
-  width: 100%;
-  margin-bottom: 28px;
-  animation: appear .25s ease-out;
-}
-
-.messageRow.user { justify-content: flex-end; }
-.messageRow.assistant { justify-content: flex-start; }
-
-@keyframes appear {
-  from { opacity: 0; transform: translateY(8px); }
-  to { opacity: 1; transform: translateY(0); }
+.welcome p {
+    color: var(--muted);
+    max-width: 430px;
+    line-height: 1.6;
 }
 
 .message {
-  max-width: 78%;
-  min-width: 100px;
-  line-height: 1.65;
-  overflow-wrap: anywhere;
+    display: flex;
+    gap: 13px;
+    margin: 28px 0;
+    animation: message-in .25s ease;
+    align-items: flex-start;
 }
 
-.user .message {
-  background: linear-gradient(145deg, #27173e, #21132f);
-  border: 1px solid #513575;
-  padding: 16px 20px;
-  border-radius: 18px 18px 5px 18px;
-  box-shadow: 0 8px 30px #00000015;
+@keyframes message-in {
+    from { opacity: 0; transform: translateY(7px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
-.assistant .message { padding: 6px 4px; }
-
-.messageLabel {
-  font-size: 12px;
-  font-weight: 700;
-  color: var(--muted);
-  margin-bottom: 8px;
-  letter-spacing: .4px;
+.message.user {
+    justify-content: flex-end;
 }
 
-.user .messageLabel { text-align: right; }
-
-.assistant .messageLabel {
-  display: flex;
-  align-items: center;
-  gap: 9px;
+.message.codete {
+    justify-content: flex-start;
 }
 
-.messageBody { white-space: pre-wrap; }
-
-/* ERROR */
-
-.errorBlock {
-  background: var(--redbg);
-  color: #ffb8bd;
-  border: 1px solid #a83340;
-  border-left: 4px solid var(--red);
-  border-radius: 10px;
-  padding: 13px 15px;
-  margin-top: 8px;
-  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
-  font-size: 13px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
+.message-avatar {
+    width: 34px;
+    height: 34px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
-.errorTitle {
-  font-weight: 800;
-  color: #ff737c;
-  margin-bottom: 6px;
-  font-family: system-ui, sans-serif;
+.message-avatar svg {
+    width: 34px;
+    height: 34px;
 }
 
-/* THINKING */
-
-.thinking {
-  color: var(--purple3);
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
+.message-content {
+    min-width: 0;
+    max-width: min(80%, 760px);
+    line-height: 1.65;
+    overflow-wrap: anywhere;
 }
 
-.thinkingDots {
-  display: inline-flex;
-  gap: 4px;
+.message.user .message-content {
+    background: linear-gradient(145deg, #251638, #1a1129);
+    border: 1px solid rgba(161, 94, 255, .34);
+    border-radius: 18px 5px 18px 18px;
+    padding: 15px 18px;
+    box-shadow: 0 4px 25px rgba(80, 30, 140, .08);
 }
 
-.thinkingDots span {
-  width: 5px;
-  height: 5px;
-  border-radius: 50%;
-  background: var(--purple);
-  animation: dot 1.2s infinite;
+.message.codete .message-content {
+    padding: 4px 0;
 }
 
-.thinkingDots span:nth-child(2) { animation-delay: .2s; }
-.thinkingDots span:nth-child(3) { animation-delay: .4s; }
+.message-header {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--purple3);
+    margin-bottom: 7px;
+}
+
+.message.user .message-header {
+    text-align: right;
+}
+
+.message-text {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.message-text p {
+    margin: 0 0 12px;
+}
+
+.message-text p:last-child {
+    margin-bottom: 0;
+}
+
+.message-text ul,
+.message-text ol {
+    padding-left: 25px;
+}
+
+.message-text a {
+    color: #c6a6ff;
+}
+
+.message-text code {
+    background: rgba(155, 101, 255, .12);
+    border: 1px solid rgba(155, 101, 255, .15);
+    padding: 2px 5px;
+    border-radius: 5px;
+    font-family: Consolas, monospace;
+}
+
+.message-text pre {
+    overflow-x: auto;
+    background: #0c0913;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 15px;
+}
+
+.message-text pre code {
+    border: 0;
+    background: transparent;
+    padding: 0;
+}
+
+.message-text blockquote {
+    border-left: 3px solid var(--purple);
+    margin: 12px 0;
+    padding-left: 14px;
+    color: var(--muted);
+}
+
+.message-text h1,
+.message-text h2,
+.message-text h3 {
+    margin: 18px 0 8px;
+}
+
+.error-block {
+    border: 1px solid rgba(255, 64, 76, .5);
+    border-left: 4px solid var(--error);
+    background: rgba(150, 18, 30, .14);
+    border-radius: 12px;
+    padding: 13px 16px;
+    margin: 10px 0;
+    color: #ffd5d8;
+}
+
+.error-title {
+    font-weight: 700;
+    color: #ff737c;
+    margin-bottom: 8px;
+}
+
+.error-block pre {
+    margin: 0;
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: Consolas, monospace;
+    font-size: 13px;
+    overflow-wrap: anywhere;
+}
+
+/* ANIMATED ^^ */
+
+.codete-icon {
+    width: 42px;
+    height: 42px;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-radius: 14px;
+    background: linear-gradient(135deg, #7132ce, #4b218b);
+    box-shadow: 0 0 25px rgba(126, 65, 255, .28);
+    overflow: hidden;
+}
+
+.codete-icon::before {
+    content: "";
+    position: absolute;
+    width: 150%;
+    height: 150%;
+    top: -25%;
+    left: -25%;
+    background: conic-gradient(
+        transparent,
+        rgba(255,255,255,.24),
+        transparent 35%
+    );
+    animation: spin 4s linear infinite;
+}
+
+.codete-icon .face {
+    position: relative;
+    z-index: 1;
+    color: white;
+    font-size: 17px;
+    font-weight: 900;
+    letter-spacing: -2px;
+    transform: translateX(-1px);
+    animation: face-bob 2.4s ease-in-out infinite;
+}
+
+.codete-icon.small {
+    width: 34px;
+    height: 34px;
+    border-radius: 11px;
+}
+
+.codete-icon.small .face {
+    font-size: 14px;
+}
+
+.codete-icon.large {
+    width: 95px;
+    height: 95px;
+    border-radius: 28px;
+}
+
+.codete-icon.large .face {
+    font-size: 36px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+@keyframes face-bob {
+    0%, 100% { transform: translateY(0) translateX(-1px); }
+    50% { transform: translateY(-2px) translateX(-1px); }
+}
+
+.codete-icon.thinking {
+    animation: pulse 1.3s ease-in-out infinite;
+}
+
+.codete-icon.thinking .face {
+    animation: thinking-face .6s ease-in-out infinite alternate;
+}
+
+@keyframes pulse {
+    0%, 100% { box-shadow: 0 0 15px rgba(126,65,255,.25); }
+    50% { box-shadow: 0 0 38px rgba(126,65,255,.65); }
+}
+
+@keyframes thinking-face {
+    from { transform: translateY(1px) translateX(-1px); }
+    to { transform: translateY(-3px) translateX(-1px); }
+}
+
+/* GENERATION */
+
+.typing {
+    display: flex;
+    gap: 13px;
+    align-items: flex-start;
+    margin: 25px 0;
+}
+
+.typing-content {
+    padding: 5px 0;
+    color: var(--muted);
+    font-size: 13px;
+}
+
+.typing-dots {
+    display: inline-flex;
+    gap: 4px;
+    margin-left: 8px;
+}
+
+.typing-dots span {
+    width: 5px;
+    height: 5px;
+    background: var(--purple);
+    border-radius: 50%;
+    animation: dot 1s infinite ease-in-out;
+}
+
+.typing-dots span:nth-child(2) {
+    animation-delay: .15s;
+}
+
+.typing-dots span:nth-child(3) {
+    animation-delay: .3s;
+}
 
 @keyframes dot {
-  0%,80%,100% { opacity: .3; transform: translateY(0); }
-  40% { opacity: 1; transform: translateY(-4px); }
+    0%, 80%, 100% { opacity: .3; transform: translateY(0); }
+    40% { opacity: 1; transform: translateY(-4px); }
 }
 
-/* COMPOSER */
+/* INPUT */
 
-#composerArea {
-  padding: 18px 5% 25px;
-  background: linear-gradient(transparent, #09070fdd 25%);
+.input-area {
+    padding: 15px 24px 24px;
+    background: linear-gradient(transparent, rgba(9,7,17,.95) 30%);
 }
 
-#composer {
-  max-width: 1050px;
-  margin: auto;
-  display: flex;
-  gap: 12px;
-  align-items: flex-end;
-  padding: 14px;
-  background: #151020;
-  border: 1px solid #392653;
-  border-radius: 18px;
-  box-shadow: 0 0 35px #6d28d910;
-  transition: border-color .2s, box-shadow .2s;
+.input-container {
+    max-width: 900px;
+    margin: 0 auto;
+    border: 1px solid var(--border);
+    border-radius: 18px;
+    background: rgba(20, 14, 31, .94);
+    box-shadow: 0 0 35px rgba(90, 38, 160, .08);
+    transition: border-color .2s, box-shadow .2s;
 }
 
-#composer:focus-within {
-  border-color: #7753a5;
-  box-shadow: 0 0 35px #8b5cf620;
+.input-container:focus-within {
+    border-color: rgba(164, 108, 255, .5);
+    box-shadow: 0 0 35px rgba(90, 38, 160, .15);
 }
 
-#input {
-  flex: 1;
-  resize: none;
-  border: 0;
-  outline: none;
-  background: transparent;
-  color: var(--text);
-  min-height: 42px;
-  max-height: 200px;
-  padding: 10px;
-  font-size: 15px;
+#prompt {
+    width: 100%;
+    border: 0;
+    outline: 0;
+    resize: none;
+    background: transparent;
+    color: var(--text);
+    padding: 18px 18px 10px;
+    min-height: 60px;
+    max-height: 220px;
+    line-height: 1.5;
 }
 
-#input::placeholder { color: #81758f; }
-
-#send {
-  width: 48px;
-  height: 48px;
-  border: none;
-  border-radius: 12px;
-  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
-  color: white;
-  font-size: 20px;
-  font-weight: 800;
-  cursor: pointer;
-  transition: .2s;
+#prompt::placeholder {
+    color: #80758f;
 }
 
-#send:hover {
-  box-shadow: 0 0 25px #8b5cf655;
-  transform: translateY(-2px);
+.input-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px 12px;
 }
 
-#send:disabled {
-  opacity: .5;
-  cursor: not-allowed;
+.input-hint {
+    font-size: 11px;
+    color: var(--muted);
 }
 
-#footnote {
-  text-align: center;
-  color: #746783;
-  font-size: 11px;
-  margin-top: 12px;
+.send-btn {
+    width: 42px;
+    height: 42px;
+    border: 1px solid rgba(166, 109, 255, .4);
+    background: linear-gradient(135deg, #8b4be6, #6028ae);
+    border-radius: 12px;
+    font-size: 20px;
+    transition: .2s;
+}
+
+.send-btn:hover {
+    filter: brightness(1.2);
+    transform: translateY(-1px);
+}
+
+.send-btn:disabled {
+    opacity: .4;
+    cursor: not-allowed;
+}
+
+.disclaimer {
+    text-align: center;
+    color: #70677f;
+    font-size: 10px;
+    padding-top: 10px;
 }
 
 /* MODAL */
 
-#modal {
-  position: fixed;
-  inset: 0;
-  background: #000b;
-  backdrop-filter: blur(8px);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 10;
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    background: rgba(0, 0, 0, .7);
+    backdrop-filter: blur(8px);
+    padding: 20px;
 }
 
-#modalBox {
-  background: linear-gradient(160deg, #1b1428, #120d1c);
-  border: 1px solid #392653;
-  width: 100%;
-  max-width: 460px;
-  border-radius: 20px;
-  padding: 28px;
-  box-shadow: 0 25px 90px #0009;
+.modal-overlay.open {
+    display: flex;
 }
 
-#modalBox h2 {
-  margin-top: 0;
-  font-size: 25px;
+.modal {
+    width: 100%;
+    max-width: 420px;
+    background: #140e20;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 26px;
+    box-shadow: 0 15px 80px rgba(0,0,0,.5);
 }
 
-#modalContent input {
-  width: 100%;
-  padding: 14px;
-  margin: 8px 0;
-  background: #0e0b15;
-  color: var(--text);
-  border: 1px solid #392653;
-  border-radius: 11px;
-  outline: none;
+.modal-title {
+    font-size: 22px;
+    font-weight: 750;
+    margin-bottom: 7px;
 }
 
-#modalContent input:focus {
-  border-color: var(--purple);
-  box-shadow: 0 0 15px #8b5cf622;
+.modal-description {
+    font-size: 13px;
+    color: var(--muted);
+    line-height: 1.6;
+    margin-bottom: 20px;
 }
 
-#modalNote {
-  font-size: 12px;
-  color: var(--muted);
-  line-height: 1.6;
+.modal input {
+    display: block;
+    width: 100%;
+    background: #0c0914;
+    border: 1px solid var(--border);
+    border-radius: 11px;
+    padding: 13px;
+    margin-bottom: 12px;
+    color: var(--text);
+    outline: none;
 }
 
-.modalButtons {
-  display: flex;
-  gap: 10px;
-  margin-top: 18px;
-  flex-wrap: wrap;
+.modal input:focus {
+    border-color: var(--purple);
 }
 
-.modalButtons button {
-  flex: 1;
-  min-width: 100px;
-  color: var(--text);
-  background: #241936;
-  border: 1px solid #392653;
-  border-radius: 11px;
-  padding: 12px;
-  cursor: pointer;
-  transition: .2s;
+.modal-primary {
+    width: 100%;
+    background: linear-gradient(135deg, #8545dc, #5b2a9b);
+    border: 1px solid rgba(175, 120, 255, .4);
+    padding: 13px;
+    border-radius: 11px;
+    font-weight: 700;
+    margin-top: 5px;
 }
 
-.modalButtons button:hover { background: #33234c; }
-
-.modalLink {
-  background: none;
-  border: none;
-  color: var(--purple3);
-  cursor: pointer;
-  padding: 12px 0 0;
-  text-decoration: underline;
+.modal-primary:hover {
+    filter: brightness(1.15);
 }
 
-/* RESPONSIVE */
+.modal-links {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 15px;
+    font-size: 12px;
+    gap: 10px;
+}
 
-@media(max-width:700px) {
-  header { padding: 0 12px; height: 68px; }
-  .brandName { font-size: 18px; }
-  #model { max-width: 155px; padding: 8px; }
-  #chat { padding: 20px 15px; }
-  .message { max-width: 95%; }
-  #composerArea { padding: 12px 12px 20px; }
-  #empty h1 { font-size: 27px; }
+.modal-links button {
+    background: transparent;
+    border: 0;
+    color: var(--purple3);
+    padding: 5px 0;
+}
+
+.modal-error {
+    color: #ff7b84;
+    background: rgba(180, 30, 50, .13);
+    border: 1px solid rgba(255, 70, 90, .25);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    display: none;
+}
+
+.modal-error.visible {
+    display: block;
+}
+
+.modal-success {
+    color: #b9ffd0;
+    background: rgba(30, 150, 70, .12);
+    border: 1px solid rgba(80, 220, 130, .25);
+    padding: 10px;
+    border-radius: 10px;
+    font-size: 12px;
+    margin-bottom: 12px;
+    display: none;
+}
+
+.modal-success.visible {
+    display: block;
+}
+
+/* MOBILE */
+
+@media(max-width: 760px) {
+    .sidebar {
+        position: fixed;
+        z-index: 20;
+        top: 0;
+        bottom: 0;
+        left: 0;
+        transform: translateX(-100%);
+        box-shadow: 15px 0 50px rgba(0,0,0,.5);
+    }
+
+    .sidebar.open {
+        transform: translateX(0);
+    }
+
+    .menu-button {
+        display: block;
+    }
+
+    .topbar {
+        padding: 0 14px;
+    }
+
+    .model-select {
+        max-width: 170px;
+        font-size: 12px;
+    }
+
+    .chat-inner {
+        padding: 0 16px;
+    }
+
+    .message-content {
+        max-width: 88%;
+    }
+
+    .input-area {
+        padding: 12px 12px 15px;
+    }
+
+    .input-hint {
+        display: none;
+    }
+
+    .welcome h1 {
+        font-size: 29px;
+    }
 }
 </style>
 </head>
 
 <body>
+
 <div id="app">
 
-<header>
-  <div class="brand">
-    <div class="faceLogo" title="Codete">
-      <div class="face">
-        <span class="eye"></span>
-        <span class="eye"></span>
-      </div>
-    </div>
-    <div class="brandName">Code<span>te</span></div>
-  </div>
+    <!-- SIDEBAR -->
 
-  <div class="headerRight">
-    <select id="model">
-      <option value="Codete 1.0">Codete 1.0</option>
-      <option value="Codete Advanced 1.0">Codete Advanced 1.0</option>
-    </select>
-    <button id="accountBtn">Sign in</button>
-  </div>
-</header>
+    <aside class="sidebar" id="sidebar">
 
-<section id="chat">
-  <div id="empty">
-    <div class="emptyLogo">
-      <div class="face">
-        <span class="eye"></span>
-        <span class="eye"></span>
-      </div>
-    </div>
-    <h1>Where should we begin?</h1>
-    <p>Build, explore, debug, and create with Codete.</p>
-  </div>
-</section>
+        <div class="brand">
+            <div class="codete-icon small">
+                <span class="face">^^</span>
+            </div>
+            Codete
+        </div>
 
-<div id="composerArea">
-  <div id="composer">
-    <textarea id="input" placeholder="Message Codete..." rows="1"></textarea>
-    <button id="send" title="Send">↑</button>
-  </div>
-  <div id="footnote">Codete can make mistakes. Review generated code.</div>
+        <button class="new-chat" onclick="newChat()">
+            + New Chat
+        </button>
+
+        <div class="sidebar-label">Workspace</div>
+
+        <div class="sidebar-footer">
+
+            <button class="sidebar-btn" onclick="openAuth()">
+                Account / Sign in
+            </button>
+
+            <button class="sidebar-btn" onclick="clearChat()">
+                Clear conversation
+            </button>
+
+            <button class="sidebar-btn" onclick="logout()">
+                Sign out
+            </button>
+
+        </div>
+
+        <div class="account-info" id="accountInfo">
+            Not signed in
+        </div>
+
+    </aside>
+
+    <!-- MAIN -->
+
+    <main class="main">
+
+        <header class="topbar">
+
+            <div class="topbar-left">
+                <button class="menu-button" onclick="toggleSidebar()">☰</button>
+                <div class="topbar-title">Codete</div>
+            </div>
+
+            <div class="topbar-left">
+
+                <select class="model-select" id="model">
+                    <option value="Codete 1.0">Codete 1.0</option>
+                    <option value="Codete Advanced 1.0">Codete Advanced 1.0</option>
+                </select>
+
+                <div class="status" id="status">Connecting...</div>
+
+            </div>
+
+        </header>
+
+        <section class="chat" id="chat">
+
+            <div class="chat-inner" id="chatInner">
+
+                <div class="welcome" id="welcome">
+
+                    <div class="codete-icon large">
+                        <span class="face">^^</span>
+                    </div>
+
+                    <h1>Welcome to Codete</h1>
+
+                    <p>
+                        Your coding companion. Ask questions, explore ideas,
+                        and build things together.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <footer class="input-area">
+
+            <div class="input-container">
+
+                <textarea
+                    id="prompt"
+                    placeholder="Message Codete..."
+                    rows="1"
+                    onkeydown="handleKey(event)"
+                    oninput="resizeInput(this)"
+                ></textarea>
+
+                <div class="input-bottom">
+
+                    <span class="input-hint">
+                        Enter to send · Shift+Enter for newline
+                    </span>
+
+                    <button
+                        class="send-btn"
+                        id="sendBtn"
+                        onclick="sendMessage()"
+                        title="Send"
+                    >
+                        ↑
+                    </button>
+
+                </div>
+
+            </div>
+
+            <div class="disclaimer">
+                Codete may make mistakes. Verify important information.
+            </div>
+
+        </footer>
+
+    </main>
+
 </div>
 
-</div>
+<!-- AUTH MODAL -->
 
-<div id="modal">
-  <div id="modalBox">
-    <h2 id="modalTitle">Account</h2>
-    <div id="modalContent"></div>
-    <div id="modalLinkRow"></div>
-    <div class="modalButtons" id="modalButtons"></div>
-  </div>
+<div class="modal-overlay" id="authModal" onclick="outsideModal(event)">
+
+    <div class="modal">
+
+        <div class="modal-title" id="authTitle">Sign in to Codete</div>
+
+        <div class="modal-description" id="authDescription">
+            Sign in to access your Codete account.
+        </div>
+
+        <div class="modal-error" id="authError"></div>
+        <div class="modal-success" id="authSuccess"></div>
+
+        <input
+            type="email"
+            id="authEmail"
+            placeholder="Email address"
+            autocomplete="email"
+        >
+
+        <input
+            type="password"
+            id="authPassword"
+            placeholder="Password"
+            autocomplete="current-password"
+        >
+
+        <button class="modal-primary" id="authSubmit" onclick="submitAuth()">
+            Sign in
+        </button>
+
+        <div class="modal-links">
+            <button onclick="switchAuth('signup')">Create account</button>
+            <button onclick="switchAuth('signin')">Sign in</button>
+            <button onclick="switchAuth('forgot')">Forgot password?</button>
+        </div>
+
+    </div>
+
 </div>
 
 <script>
-/* CONFIGURATION */
+
+/* ========================================================
+   CONFIGURATION
+======================================================== */
 
 const RELAY_URL =
-  "https://raw.githubusercontent.com/CodeteAI/Codete/refs/heads/main/relay.txt";
+    "https://raw.githubusercontent.com/CodeteAI/Codete/refs/heads/main/relay.txt";
 
-let discoveredBackend = "";
-let apiKey = sessionStorage.getItem("codete_api_key") || "";
-let accountName = sessionStorage.getItem("codete_account") || "";
-let messages = [];
+const FAVICON_URL =
+    "https://raw.githubusercontent.com/CodeteAI/Codete/refs/heads/main/favicon.ico";
+
+const MAX_DISPLAY_ERRORS = 1;
+
+let discoveredBase = "";
+let authMode = "signin";
 let busy = false;
 
-/* BACKEND */
+let apiKey = sessionStorage.getItem("codete_key") || "";
+let accountEmail = sessionStorage.getItem("codete_email") || "";
+let accountPlan = sessionStorage.getItem("codete_plan") || "";
 
-function normalizeBackend(url) {
-  url = (url || "").trim().replace(/\/+$/, "");
-  if (!url) return "";
-  url = url.replace(/\/v1$/i, "");
-  return url + "/v1";
+let conversation = [];
+
+const chat = document.getElementById("chat");
+const chatInner = document.getElementById("chatInner");
+const promptBox = document.getElementById("prompt");
+const sendBtn = document.getElementById("sendBtn");
+const statusEl = document.getElementById("status");
+
+/* ========================================================
+   BACKEND DISCOVERY
+======================================================== */
+
+function normalizeBase(raw) {
+    let value = (raw || "").trim().replace(/\/+$/, "");
+
+    if (!value) return "";
+
+    if (value.endsWith("/v1")) {
+        value = value.slice(0, -3);
+    }
+
+    return value.replace(/\/+$/, "");
 }
 
 function base() {
-  return normalizeBackend(discoveredBackend);
+    return normalizeBase(discoveredBase);
+}
+
+function apiBase() {
+    const root = base();
+
+    if (!root) return "";
+
+    return root + "/v1";
+}
+
+function updateStatus(text) {
+    statusEl.textContent = text;
 }
 
 async function discoverBackend() {
-  try {
-    const response = await fetch(RELAY_URL, { cache: "no-store" });
+    updateStatus("Connecting...");
 
-    if (!response.ok) {
-      throw new Error("Relay HTTP " + response.status);
+    try {
+        const response = await fetch(RELAY_URL, {
+            cache: "no-store"
+        });
+
+        if (!response.ok) {
+            throw new Error("Relay HTTP " + response.status);
+        }
+
+        const text = await response.text();
+
+        discoveredBase = normalizeBase(text);
+
+        if (!discoveredBase) {
+            throw new Error("Relay file was empty.");
+        }
+
+        updateStatus("Connected");
+
+    } catch (error) {
+        discoveredBase = "";
+
+        updateStatus("Connection failed");
+
+        console.error("Codete relay discovery:", error);
     }
-
-    const relayText = (await response.text()).trim();
-
-    if (!relayText) throw new Error("Relay file is empty");
-
-    discoveredBackend = relayText.replace(/\/+$/, "");
-
-    console.log("Codete backend:", base());
-  } catch (error) {
-    console.error("Relay discovery failed:", error);
-  }
 }
 
-/* API HELPER */
+/* ========================================================
+   ICON
+======================================================== */
 
-async function apiFetch(path, options = {}) {
-  if (!base()) throw new Error("Backend is not available yet.");
-
-  const url = base() + "/" + path.replace(/^\/+/, "");
-  const headers = new Headers(options.headers || {});
-
-  if (apiKey) headers.set("Authorization", "Bearer " + apiKey);
-
-  if (options.body && !headers.has("Content-Type")) {
-    headers.set("Content-Type", "application/json");
-  }
-
-  try {
-    return await fetch(url, { ...options, headers });
-  } catch (error) {
-    if (error instanceof TypeError) {
-      throw new Error("Network or CORS error. The gateway may be unavailable.");
-    }
-    throw error;
-  }
-}
-
-/* ERROR PARSING */
-
-function extractError(data) {
-  if (!data) return "Unknown error";
-  if (typeof data === "string") return data;
-
-  if (data.detail) {
-    return typeof data.detail === "string"
-      ? data.detail
-      : JSON.stringify(data.detail, null, 2);
-  }
-
-  if (data.error) {
-    return typeof data.error === "string"
-      ? data.error
-      : JSON.stringify(data.error, null, 2);
-  }
-
-  if (data.message) return data.message;
-
-  return JSON.stringify(data, null, 2);
-}
-
-async function parseResponse(response) {
-  const text = await response.text();
-  let data;
-
-  try {
-    data = text ? JSON.parse(text) : {};
-  } catch {
-    data = { detail: text };
-  }
-
-  if (!response.ok) throw new Error(extractError(data));
-
-  return data;
-}
-
-/* RENDERING */
-
-function removeEmpty() {
-  const empty = document.getElementById("empty");
-  if (empty) empty.remove();
-}
-
-function createMessage(role, content = "") {
-  removeEmpty();
-
-  const chat = document.getElementById("chat");
-  const row = document.createElement("div");
-  row.className = "messageRow " + role;
-
-  const box = document.createElement("div");
-  box.className = "message";
-
-  const label = document.createElement("div");
-  label.className = "messageLabel";
-
-  if (role === "user") {
-    label.textContent = "You";
-  } else {
-    const icon = document.createElement("div");
-    icon.className = "miniLogo";
-
-    const face = document.createElement("div");
-    face.className = "miniFace";
-
-    for (let i = 0; i < 2; i++) {
-      const eye = document.createElement("span");
-      eye.className = "miniEye";
-      face.appendChild(eye);
-    }
-
-    icon.appendChild(face);
-
-    const name = document.createElement("span");
-    name.textContent = "Codete";
-
-    label.append(icon, name);
-  }
-
-  const body = document.createElement("div");
-  body.className = "messageBody";
-  body.textContent = content;
-
-  box.append(label, body);
-  row.appendChild(box);
-  chat.appendChild(row);
-
-  chat.scrollTop = chat.scrollHeight;
-
-  return { row, box, body };
-}
-
-function addMessage(role, content) {
-  return createMessage(role, content).body;
-}
-
-function addErrorMessage(messageObject, errorText) {
-  messageObject.body.textContent = "";
-
-  const error = document.createElement("div");
-  error.className = "errorBlock";
-
-  const title = document.createElement("div");
-  title.className = "errorTitle";
-  title.textContent = "Codete encountered an error";
-
-  const text = document.createElement("div");
-  text.textContent = errorText;
-
-  error.append(title, text);
-  messageObject.body.appendChild(error);
-
-  document.getElementById("chat").scrollTop =
-    document.getElementById("chat").scrollHeight;
-}
-
-/* THINKING */
-
-function showThinking(messageObject) {
-  messageObject.body.textContent = "";
-
-  const thinking = document.createElement("div");
-  thinking.className = "thinking";
-
-  const text = document.createElement("span");
-  text.textContent = "Thinking";
-
-  const dots = document.createElement("div");
-  dots.className = "thinkingDots";
-
-  for (let i = 0; i < 3; i++) {
-    const dot = document.createElement("span");
-    dots.appendChild(dot);
-  }
-
-  thinking.append(text, dots);
-  messageObject.body.appendChild(thinking);
-}
-
-/* CHAT */
-
-function newChat() {
-  messages = [];
-
-  document.getElementById("chat").innerHTML = `
-    <div id="empty">
-      <div class="emptyLogo">
-        <div class="face">
-          <span class="eye"></span>
-          <span class="eye"></span>
+function iconMarkup(size = "") {
+    return `
+        <div class="codete-icon ${size}">
+            <span class="face">^^</span>
         </div>
-      </div>
-      <h1>Where should we begin?</h1>
-      <p>Build, explore, debug, and create with Codete.</p>
-    </div>
-  `;
+    `;
 }
 
-const input = document.getElementById("input");
+/* ========================================================
+   ACCOUNT
+======================================================== */
 
-input.addEventListener("input", () => {
-  input.style.height = "auto";
-  input.style.height = Math.min(input.scrollHeight, 200) + "px";
-});
+function updateAccount() {
+    const info = document.getElementById("accountInfo");
 
-input.addEventListener("keydown", event => {
-  if (event.key === "Enter" && !event.shiftKey) {
-    event.preventDefault();
-    sendMessage();
-  }
-});
-
-async function sendMessage() {
-  if (busy) return;
-
-  const text = input.value.trim();
-  if (!text) return;
-
-  if (!apiKey) {
-    openAuth("signin");
-    return;
-  }
-
-  if (!base()) {
-    alert("Backend has not been discovered yet.");
-    return;
-  }
-
-  busy = true;
-  document.getElementById("send").disabled = true;
-
-  input.value = "";
-  input.style.height = "auto";
-
-  addMessage("user", text);
-  messages.push({ role: "user", content: text });
-
-  const assistantMessage = createMessage("assistant");
-  showThinking(assistantMessage);
-
-  try {
-    const response = await apiFetch("chat/completions", {
-      method: "POST",
-      body: JSON.stringify({
-        model: document.getElementById("model").value,
-        messages: messages
-      })
-    });
-
-    const tokensUsed = response.headers.get("X-Codete-Tokens-Used");
-    const tokensLeft = response.headers.get("X-Codete-Tokens-Left");
-
-    const data = await parseResponse(response);
-
-    let reply = "";
-
-    if (data.choices && data.choices.length > 0) {
-      reply = data.choices[0].message?.content || "";
+    if (apiKey && accountEmail) {
+        info.innerHTML = `
+            <div>${escapeHTML(accountEmail)}</div>
+            <div class="account-plan">
+                ${escapeHTML(accountPlan || "basic")}
+            </div>
+        `;
     } else {
-      reply = data.response || data.message || JSON.stringify(data);
+        info.textContent = "Not signed in";
+    }
+}
+
+function openAuth() {
+    document.getElementById("authModal").classList.add("open");
+
+    switchAuth(apiKey ? "signin" : "signin");
+
+    if (accountEmail) {
+        document.getElementById("authEmail").value = accountEmail;
+    }
+}
+
+function closeAuth() {
+    document.getElementById("authModal").classList.remove("open");
+}
+
+function outsideModal(event) {
+    if (event.target.id === "authModal") {
+        closeAuth();
+    }
+}
+
+function switchAuth(mode) {
+    authMode = mode;
+
+    const title = document.getElementById("authTitle");
+    const desc = document.getElementById("authDescription");
+    const password = document.getElementById("authPassword");
+    const submit = document.getElementById("authSubmit");
+
+    hideAuthMessages();
+
+    if (mode === "signup") {
+        title.textContent = "Create a Codete account";
+        desc.textContent = "Create an account to begin using Codete.";
+        password.style.display = "block";
+        password.placeholder = "Password";
+        submit.textContent = "Create account";
     }
 
-    assistantMessage.body.textContent = reply || "(Empty response)";
+    else if (mode === "forgot") {
+        title.textContent = "Reset your password";
+        desc.textContent =
+            "Enter your email address. If an account exists, a recovery email may be sent.";
+        password.style.display = "none";
+        submit.textContent = "Send recovery email";
+    }
 
-    messages.push({ role: "assistant", content: reply });
-
-    console.log("Tokens used:", tokensUsed, "Remaining:", tokensLeft);
-
-  } catch (error) {
-    addErrorMessage(assistantMessage, error.message || String(error));
-    messages.pop();
-    console.error(error);
-  } finally {
-    busy = false;
-    document.getElementById("send").disabled = false;
-    input.focus();
-  }
+    else {
+        title.textContent = "Sign in to Codete";
+        desc.textContent = "Sign in to access your Codete account.";
+        password.style.display = "block";
+        password.placeholder = "Password";
+        submit.textContent = "Sign in";
+    }
 }
 
-document.getElementById("send").onclick = sendMessage;
+function showAuthError(text) {
+    const element = document.getElementById("authError");
 
-/* MODAL */
-
-function openModal(title, content, buttons, linkContent = "") {
-  document.getElementById("modalTitle").textContent = title;
-  document.getElementById("modalContent").innerHTML = content;
-  document.getElementById("modalLinkRow").innerHTML = linkContent;
-
-  const buttonArea = document.getElementById("modalButtons");
-  buttonArea.innerHTML = "";
-
-  for (const button of buttons) {
-    const b = document.createElement("button");
-    b.textContent = button.label;
-    b.onclick = button.action;
-    buttonArea.appendChild(b);
-  }
-
-  document.getElementById("modal").style.display = "flex";
+    element.textContent = text;
+    element.classList.add("visible");
 }
 
-function closeModal() {
-  document.getElementById("modal").style.display = "none";
+function showAuthSuccess(text) {
+    const element = document.getElementById("authSuccess");
+
+    element.textContent = text;
+    element.classList.add("visible");
 }
 
-/* AUTH */
-
-function openAuth(mode = "signin") {
-  const signup = mode === "signup";
-
-  openModal(
-    signup ? "Create account" : "Sign in",
-    `
-      <input id="authEmail" type="email" placeholder="Email address" autocomplete="email">
-      <input id="authPassword" type="password" placeholder="Password"
-        autocomplete="${signup ? "new-password" : "current-password"}">
-      <p id="modalNote">Authentication is handled by the Codete gateway.</p>
-    `,
-    [
-      { label: signup ? "Sign up" : "Sign in", action: submitAuth },
-      {
-        label: signup ? "Switch to sign in" : "Create account",
-        action: () => openAuth(signup ? "signin" : "signup")
-      },
-      { label: "Cancel", action: closeModal }
-    ],
-    signup ? "" : `
-      <button class="modalLink" onclick="openForgotPassword()">Forgot password?</button>
-    `
-  );
-
-  document.getElementById("authEmail").focus();
+function hideAuthMessages() {
+    document.getElementById("authError").classList.remove("visible");
+    document.getElementById("authSuccess").classList.remove("visible");
 }
 
 async function submitAuth() {
-  const email = document.getElementById("authEmail").value.trim();
-  const password = document.getElementById("authPassword").value;
+    if (!apiBase()) {
+        showAuthError("Backend discovery failed. Please try again later.");
+        return;
+    }
 
-  if (!email || !password) {
-    alert("Enter your email and password.");
-    return;
-  }
+    const email = document.getElementById("authEmail").value.trim();
+    const password = document.getElementById("authPassword").value;
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert("Please enter a valid email address.");
-    return;
-  }
+    hideAuthMessages();
 
-  const signupMode =
-    document.getElementById("modalTitle").textContent === "Create account";
+    if (!email) {
+        showAuthError("Enter your email address.");
+        return;
+    }
 
-  try {
-    const response = await apiFetch(
-      signupMode ? "auth/signup" : "auth/signin",
-      {
-        method: "POST",
-        body: JSON.stringify({ email, password })
-      }
-    );
+    if (authMode !== "forgot" && !password) {
+        showAuthError("Enter your password.");
+        return;
+    }
 
-    const data = await parseResponse(response);
-    const key = data.api_key || data.token || data.access_token;
+    const button = document.getElementById("authSubmit");
 
-    if (!key) throw new Error("Server did not return an API key.");
+    button.disabled = true;
 
-    apiKey = key;
-    accountName = data.email || email;
+    try {
 
-    sessionStorage.setItem("codete_api_key", apiKey);
-    sessionStorage.setItem("codete_account", accountName);
+        if (authMode === "forgot") {
+            const response = await fetch(
+                apiBase() + "/auth/forgot-password",
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ email })
+                }
+            );
 
-    closeModal();
+            const data = await response.json();
+
+            if (!response.ok) {
+                throw new Error(data.detail || data.message || "Recovery request failed.");
+            }
+
+            showAuthSuccess(
+                data.message || "Recovery request submitted."
+            );
+
+            return;
+        }
+
+        const endpoint =
+            authMode === "signup"
+                ? "/auth/signup"
+                : "/auth/signin";
+
+        const response = await fetch(
+            apiBase() + endpoint,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    email,
+                    password
+                })
+            }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok) {
+            throw new Error(
+                data.detail || data.message || "Authentication failed."
+            );
+        }
+
+        apiKey = data.api_key;
+        accountEmail = data.email || email;
+        accountPlan = data.plan || "basic";
+
+        sessionStorage.setItem("codete_key", apiKey);
+        sessionStorage.setItem("codete_email", accountEmail);
+        sessionStorage.setItem("codete_plan", accountPlan);
+
+        updateAccount();
+        closeAuth();
+
+    } catch (error) {
+        showAuthError(error.message || "Authentication failed.");
+    } finally {
+        button.disabled = false;
+    }
+}
+
+function logout() {
+    apiKey = "";
+    accountEmail = "";
+    accountPlan = "";
+
+    sessionStorage.removeItem("codete_key");
+    sessionStorage.removeItem("codete_email");
+    sessionStorage.removeItem("codete_plan");
+
     updateAccount();
-  } catch (error) {
-    alert(error.message);
-  }
 }
 
-/* PASSWORD RECOVERY
-   This endpoint must be implemented in the gateway.
-*/
+/* ========================================================
+   CHAT
+======================================================== */
 
-function openForgotPassword() {
-  openModal(
-    "Reset password",
-    `
-      <input id="recoveryEmail" type="email" placeholder="Account email">
-      <p id="modalNote">
-        Password recovery is handled by the Codete gateway.
-      </p>
-    `,
-    [
-      { label: "Send recovery email", action: sendRecoveryEmail },
-      { label: "Back to sign in", action: () => openAuth("signin") },
-      { label: "Cancel", action: closeModal }
-    ]
-  );
+function newChat() {
+    conversation = [];
+    chatInner.innerHTML = "";
 
-  document.getElementById("recoveryEmail").focus();
+    showWelcome();
+
+    promptBox.value = "";
+    resizeInput(promptBox);
+
+    closeSidebarMobile();
 }
 
-async function sendRecoveryEmail() {
-  const email = document.getElementById("recoveryEmail").value.trim();
+function clearChat() {
+    newChat();
+}
 
-  if (!email) {
-    alert("Enter your email address.");
-    return;
-  }
+function showWelcome() {
+    chatInner.innerHTML = `
+        <div class="welcome" id="welcome">
 
-  try {
-    const response = await apiFetch("auth/forgot-password", {
-      method: "POST",
-      body: JSON.stringify({ email })
+            ${iconMarkup("large")}
+
+            <h1>Welcome to Codete</h1>
+
+            <p>
+                Your coding companion. Ask questions, explore ideas,
+                and build things together.
+            </p>
+
+        </div>
+    `;
+}
+
+function removeWelcome() {
+    const welcome = document.getElementById("welcome");
+
+    if (welcome) {
+        welcome.remove();
+    }
+}
+
+function scrollToBottom() {
+    chat.scrollTop = chat.scrollHeight;
+}
+
+function appendUserMessage(text) {
+    removeWelcome();
+
+    const div = document.createElement("div");
+
+    div.className = "message user";
+
+    div.innerHTML = `
+        <div class="message-content">
+            <div class="message-header">You</div>
+            <div class="message-text"></div>
+        </div>
+    `;
+
+    div.querySelector(".message-text").textContent = text;
+
+    chatInner.appendChild(div);
+
+    scrollToBottom();
+}
+
+function appendAssistantMessage(text) {
+    removeWelcome();
+
+    const div = document.createElement("div");
+
+    div.className = "message codete";
+
+    div.innerHTML = `
+        <div class="message-avatar">
+            ${iconMarkup("small")}
+        </div>
+
+        <div class="message-content">
+            <div class="message-header">Codete</div>
+            <div class="message-text"></div>
+        </div>
+    `;
+
+    div.querySelector(".message-text").innerHTML =
+        renderMarkdown(text);
+
+    chatInner.appendChild(div);
+
+    scrollToBottom();
+
+    return div;
+}
+
+function appendError(errorText) {
+    removeWelcome();
+
+    const div = document.createElement("div");
+
+    div.className = "message codete";
+
+    div.innerHTML = `
+        <div class="message-avatar">
+            ${iconMarkup("small")}
+        </div>
+
+        <div class="message-content">
+
+            <div class="message-header">Codete</div>
+
+            <div class="error-block">
+
+                <div class="error-title">
+                    Codete encountered an error
+                </div>
+
+                <pre></pre>
+
+            </div>
+
+        </div>
+    `;
+
+    div.querySelector("pre").textContent = errorText;
+
+    chatInner.appendChild(div);
+
+    scrollToBottom();
+}
+
+function appendTyping() {
+    const div = document.createElement("div");
+
+    div.className = "typing";
+    div.id = "typing";
+
+    div.innerHTML = `
+        <div class="message-avatar">
+            <div class="codete-icon small thinking">
+                <span class="face">^^</span>
+            </div>
+        </div>
+
+        <div class="typing-content">
+            Codete is thinking
+
+            <span class="typing-dots">
+                <span></span>
+                <span></span>
+                <span></span>
+            </span>
+        </div>
+    `;
+
+    chatInner.appendChild(div);
+
+    scrollToBottom();
+}
+
+function removeTyping() {
+    const element = document.getElementById("typing");
+
+    if (element) {
+        element.remove();
+    }
+}
+
+/* ========================================================
+   SEND
+======================================================== */
+
+async function sendMessage() {
+    const text = promptBox.value.trim();
+
+    if (!text || busy) return;
+
+    if (!apiKey) {
+        openAuth();
+        return;
+    }
+
+    if (!apiBase()) {
+        appendError("Could not discover the Codete backend.");
+        return;
+    }
+
+    busy = true;
+
+    sendBtn.disabled = true;
+
+    promptBox.value = "";
+    resizeInput(promptBox);
+
+    appendUserMessage(text);
+
+    conversation.push({
+        role: "user",
+        content: text
     });
 
-    const data = await parseResponse(response);
-    closeModal();
+    appendTyping();
 
-    alert(data.message || "Recovery request submitted.");
-  } catch (error) {
-    alert(error.message);
-  }
-}
+    try {
 
-/* ACCOUNT */
+        const response = await fetch(
+            apiBase() + "/chat/completions",
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Authorization": "Bearer " + apiKey
+                },
+                body: JSON.stringify({
+                    model: document.getElementById("model").value,
+                    messages: conversation,
+                    stream: false
+                })
+            }
+        );
 
-function updateAccount() {
-  document.getElementById("accountBtn").textContent =
-    apiKey ? accountName || "Account" : "Sign in";
-}
+        const raw = await response.text();
 
-document.getElementById("accountBtn").onclick = () => {
-  if (!apiKey) {
-    openAuth("signin");
-    return;
-  }
+        let data;
 
-  openModal(
-    "Account",
-    `<p>Signed in as <strong>${escapeHTML(accountName)}</strong></p>`,
-    [
-      {
-        label: "Sign out",
-        action: () => {
-          apiKey = "";
-          accountName = "";
-
-          sessionStorage.removeItem("codete_api_key");
-          sessionStorage.removeItem("codete_account");
-
-          updateAccount();
-          closeModal();
+        try {
+            data = JSON.parse(raw);
+        } catch {
+            data = { message: raw };
         }
-      },
-      { label: "Close", action: closeModal }
-    ]
-  );
-};
 
-/* ESCAPING */
+        removeTyping();
+
+        if (!response.ok) {
+
+            let errorText = "";
+
+            if (data.detail) {
+                errorText = typeof data.detail === "string"
+                    ? data.detail
+                    : JSON.stringify(data.detail, null, 2);
+            } else {
+                errorText = JSON.stringify(data, null, 2);
+            }
+
+            appendError(errorText);
+
+            // Keep the conversation intact so the user
+            // can retry without losing the previous messages.
+            conversation.pop();
+
+            return;
+        }
+
+        const choice = data.choices?.[0];
+        const message = choice?.message;
+
+        if (!message) {
+            appendError("The backend returned no assistant message.");
+            conversation.pop();
+            return;
+        }
+
+        const content = message.content;
+
+        if (typeof content === "string" && content.trim()) {
+
+            appendAssistantMessage(content);
+
+            conversation.push({
+                role: "assistant",
+                content: content
+            });
+
+        } else if (Array.isArray(content)) {
+
+            const combined = content
+                .map(item => item.text || "")
+                .join("");
+
+            appendAssistantMessage(combined);
+
+            conversation.push({
+                role: "assistant",
+                content: combined
+            });
+
+        } else {
+
+            appendAssistantMessage(
+                "Codete returned an empty response."
+            );
+
+            conversation.push({
+                role: "assistant",
+                content: ""
+            });
+        }
+
+    } catch (error) {
+
+        removeTyping();
+
+        appendError(
+            error.message || "An unexpected error occurred."
+        );
+
+        conversation.pop();
+
+    } finally {
+
+        busy = false;
+        sendBtn.disabled = false;
+
+        promptBox.focus();
+    }
+}
+
+/* ========================================================
+   MARKDOWN RENDERING
+======================================================== */
 
 function escapeHTML(text) {
-  return String(text)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#039;");
+    return String(text)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
 }
 
-/* STARTUP */
+function renderMarkdown(input) {
+    let text = escapeHTML(input);
+
+    // Fenced code blocks
+    text = text.replace(
+        /```([a-zA-Z0-9_-]*)\n([\s\S]*?)```/g,
+        (_, language, code) =>
+            `<pre><code>${code}</code></pre>`
+    );
+
+    // Inline code
+    text = text.replace(
+        /`([^`]+)`/g,
+        "<code>$1</code>"
+    );
+
+    // Bold
+    text = text.replace(
+        /\*\*(.*?)\*\*/g,
+        "<strong>$1</strong>"
+    );
+
+    // Italic
+    text = text.replace(
+        /\*(.*?)\*/g,
+        "<em>$1</em>"
+    );
+
+    // Headers
+    text = text.replace(
+        /^### (.*)$/gm,
+        "<h3>$1</h3>"
+    );
+
+    text = text.replace(
+        /^## (.*)$/gm,
+        "<h2>$1</h2>"
+    );
+
+    text = text.replace(
+        /^# (.*)$/gm,
+        "<h1>$1</h1>"
+    );
+
+    // Blockquotes
+    text = text.replace(
+        /^&gt; (.*)$/gm,
+        "<blockquote>$1</blockquote>"
+    );
+
+    // Links
+    text = text.replace(
+        /\[([^\]]+)\]\((https?:\/\/[^ )]+)\)/g,
+        '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+    );
+
+    // Lists
+    text = text.replace(
+        /^\s*[-*] (.*)$/gm,
+        "<li>$1</li>"
+    );
+
+    text = text.replace(
+        /^\s*\d+\. (.*)$/gm,
+        "<li>$1</li>"
+    );
+
+    text = text.replace(
+        /(<li>.*<\/li>\n?)+/g,
+        "<ul>$&</ul>"
+    );
+
+    // Horizontal rule
+    text = text.replace(
+        /^---$/gm,
+        "<hr>"
+    );
+
+    // Paragraphs
+    text = text.replace(
+        /\n{2,}/g,
+        "</p><p>"
+    );
+
+    text = text.replace(
+        /\n/g,
+        "<br>"
+    );
+
+    return "<p>" + text + "</p>";
+}
+
+/* ========================================================
+   INPUT
+======================================================== */
+
+function handleKey(event) {
+    if (event.key === "Enter" && !event.shiftKey) {
+        event.preventDefault();
+        sendMessage();
+    }
+}
+
+function resizeInput(element) {
+    element.style.height = "auto";
+
+    element.style.height = Math.min(
+        element.scrollHeight,
+        220
+    ) + "px";
+}
+
+/* ========================================================
+   MOBILE SIDEBAR
+======================================================== */
+
+function toggleSidebar() {
+    document.getElementById("sidebar").classList.toggle("open");
+}
+
+function closeSidebarMobile() {
+    document.getElementById("sidebar").classList.remove("open");
+}
+
+/* ========================================================
+   INITIALIZATION
+======================================================== */
 
 updateAccount();
+
 discoverBackend();
+
+promptBox.focus();
+
 </script>
+
 </body>
 </html>
