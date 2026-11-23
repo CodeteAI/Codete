@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Codete · AI Workspace</title>
+<style>
+:root{color-scheme:dark;--bg:#0b0d12;--panel:#12151c;--panel2:#181c25;--line:#272c38;--text:#eef1f7;--muted:#929aab;--accent:#8b7cff;--accent2:#6d5df5;--danger:#ff7777}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;height:100vh}
+button,input,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;color:white;background:var(--accent2);font-weight:600}button:hover{filter:brightness(1.12)}button:disabled{opacity:.5;cursor:default}
+.shell{height:100vh;display:grid;grid-template-columns:260px 1fr}.side{border-right:1px solid var(--line);background:#0e1016;padding:20px;display:flex;flex-direction:column;gap:18px}.brand{font-size:20px;font-weight:800;letter-spacing:.3px}.brand span{color:var(--accent)}.sub{color:var(--muted);font-size:12px}.side button{width:100%;text-align:left}.outline{background:transparent;border:1px solid var(--line);color:var(--text)}.sidefoot{margin-top:auto;display:grid;gap:10px}.main{display:flex;min-width:0;flex-direction:column}.top{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:15px}.top select,.top input{background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:9px 12px;border-radius:9px}.status{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.messages{flex:1;overflow:auto;padding:24px max(24px,calc((100% - 850px)/2));display:flex;flex-direction:column;gap:20px}.welcome{margin:auto;max-width:650px;text-align:center}.welcome h1{font-size:32px;margin:0 0 10px}.welcome p{color:var(--muted)}.msg{max-width:850px;width:100%;display:flex;gap:12px;align-items:flex-start}.msg.user{align-self:flex-end;flex-direction:row-reverse}.avatar{flex:none;width:34px;height:34px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700}.msg.user .avatar{background:#29234c}.bubble{padding:13px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);white-space:pre-wrap;overflow-wrap:anywhere;max-width:calc(100% - 46px)}.msg.user .bubble{background:#201d35}.composer-wrap{padding:14px 24px 24px}.composer{max-width:850px;margin:auto;border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:10px;display:flex;gap:10px;align-items:flex-end}.composer textarea{flex:1;resize:none;min-height:44px;max-height:180px;background:transparent;color:var(--text);border:0;outline:0;padding:10px}.hint{max-width:850px;margin:8px auto 0;color:var(--muted);font-size:11px}.modal{position:fixed;inset:0;background:#0009;display:none;place-items:center;padding:18px}.modal.show{display:grid}.card{width:min(430px,100%);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 20px 80px #0007}.card h2{margin:0 0 4px}.card p{color:var(--muted);font-size:13px}.card input{width:100%;margin:8px 0;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px}.card .row{display:flex;gap:10px;margin-top:12px}.card .row button{flex:1}.notice{color:var(--danger);font-size:13px;min-height:20px}.hide{display:none!important}
+@media(max-width:700px){.shell{grid-template-columns:1fr}.side{display:none}.top{padding:0 14px}.messages{padding:18px 14px}.composer-wrap{padding:12px 14px 18px}.top .status{max-width:40vw}}
+</style>
+</head>
+<body>
+<div class="shell">
+  <aside class="side">
+    <div><div class="brand">Codete<span>.</span></div><div class="sub">AI coding workspace</div></div>
+    <button id="newChat" class="outline">＋ New chat</button>
+    <div class="sub">Your workspace</div>
+    <div class="sidefoot">
+      <button id="authButton" class="outline">Sign in / Sign up</button>
+      <button id="settingsButton" class="outline">Backend settings</button>
+      <div class="sub" id="accountInfo">Not signed in</div>
+    </div>
+  </aside>
+  <main class="main">
+    <header class="top">
+      <select id="model">
+        <option>Codete 1.0</option>
+        <option>Codete Advanced 1.0</option>
+      </select>
+      <div class="status" id="status">Backend not configured</div>
+    </header>
+    <section class="messages" id="messages">
+      <div class="welcome" id="welcome">
+        <h1>What are we building?</h1>
+        <p>Ask Codete to help you plan, debug, or write code.</p>
+      </div>
+    </section>
+    <div class="composer-wrap">
+      <div class="composer">
+        <textarea id="input" rows="1" placeholder="Message Codete..."></textarea>
+        <button id="send">Send</button>
+      </div>
+      <div class="hint">Enter to send · Shift+Enter for a new line</div>
+    </div>
+  </main>
+</div>
+<div class="modal" id="authModal">
+  <div class="card">
+    <h2>Access Codete</h2><p>Sign in or create an account with your Codete backend.</p>
+    <input id="email" type="email" placeholder="Email" autocomplete="email">
+    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
+    <div class="notice" id="authNotice"></div>
+    <div class="row"><button id="signin">Sign in</button><button id="signup">Sign up</button></div>
+    <div class="row"><button class="outline" id="authClose">Cancel</button></div>
+  </div>
+</div>
+<div class="modal" id="settingsModal">
+  <div class="card">
+    <h2>Backend connection</h2><p>Enter the base address of your gateway. Example: http://localhost:8000</p>
+    <input id="backendUrl" type="url" placeholder="http://localhost:8000">
+    <div class="notice" id="settingsNotice"></div>
+    <div class="row"><button id="saveSettings">Save</button><button class="outline" id="settingsClose">Cancel</button></div>
+  </div>
+</div>
+<script>
+const $ = id => document.getElementById(id);
+let apiKey = sessionStorage.getItem("codete_key") || "";
+let messages = [];
+let busy = false;
+const base = () => (localStorage.getItem("codete_base") || "").replace(/\/+$/,"");
+
+function updateStatus(text){ $("status").textContent=text; }
+function updateAccount(){
+  $("accountInfo").textContent=apiKey?"Signed in · session key saved":"Not signed in";
+  $("authButton").textContent=apiKey?"Sign out":"Sign in / Sign up";
+}
+function modal(id,show){$(id).classList.toggle("show",show);}
+function addMessage(role,text){
+  $("welcome").classList.add("hide");
+  const row=document.createElement("div");row.className="msg "+(role==="user"?"user":"assistant");
+  const av=document.createElement("div");av.className="avatar";av.textContent=role==="user"?"YOU":"CD";
+  const bubble=document.createElement("div");bubble.className="bubble";bubble.textContent=text;
+  row.append(av,bubble);$("messages").appendChild(row);$("messages").scrollTop=$("messages").scrollHeight;
+  return bubble;
+}
+function clearChat(){messages=[];$("messages").innerHTML="";$("messages").appendChild($("welcome"));$("welcome").classList.remove("hide");}
+async function auth(mode){
+  const b=base(); if(!b){$("authNotice").textContent="Set your backend URL first.";return;}
+  $("authNotice").textContent="";
+  try{
+    const res=await fetch(b+"/v1/auth/"+mode,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("email").value.trim(),password:$("password").value})});
+    const data=await res.json();
+    if(!res.ok)throw new Error(data.detail||data.errorMessage||"Authentication failed");
+    apiKey=data.api_key;sessionStorage.setItem("codete_key",apiKey);updateAccount();modal("authModal",false);updateStatus("Connected · "+(data.plan||"account"));
+  }catch(e){$("authNotice").textContent=e.message;}
+}
+async function send(){
+  if(busy)return;const text=$("input").value.trim();if(!text)return;
+  if(!base()){modal("settingsModal",true);$("settingsNotice").textContent="";return;}
+  if(!apiKey){modal("authModal",true);return;}
+  busy=true;$("send").disabled=true;$("input").disabled=true;
+  $("input").value="";addMessage("user",text);messages.push({role:"user",content:text});
+  const pending=addMessage("assistant","Thinking...");
+  try{
+    const res=await fetch(base()+"/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},body:JSON.stringify({model:$("model").value,messages:messages,stream:false})});
+    if(res.status===401){apiKey="";sessionStorage.removeItem("codete_key");updateAccount();throw new Error("Your key was rejected. Please sign in again.");}
+    const data=await res.json();if(!res.ok)throw new Error(data.detail||data.error||"Request failed ("+res.status+")");
+    const reply=data.choices?.[0]?.message?.content??"(No response content)";
+    pending.textContent=reply;messages.push({role:"assistant",content:reply});
+    const used=res.headers.get("X-Codete-Tokens-Used"),left=res.headers.get("X-Codete-Tokens-Left");
+    updateStatus(used!==null?("Usage: "+used+" · Remaining: "+(left??"unknown")):"Connected");
+  }catch(e){pending.textContent="Error: "+e.message;messages.pop();}
+  finally{busy=false;$("send").disabled=false;$("input").disabled=false;$("input").focus();}
+}
+$("send").addEventListener("click",send);
+$("input").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
+$("newChat").addEventListener("click",clearChat);
+$("authButton").addEventListener("click",()=>{if(apiKey){apiKey="";sessionStorage.removeItem("codete_key");updateAccount();updateStatus("Signed out");}else modal("authModal",true);});
+$("signin").addEventListener("click",()=>auth("signin"));$("signup").addEventListener("click",()=>auth("signup"));
+$("authClose").addEventListener("click",()=>modal("authModal",false));
+$("settingsButton").addEventListener("click",()=>{$("backendUrl").value=localStorage.getItem("codete_base")||"";$("settingsNotice").textContent="";modal("settingsModal",true);});
+$("saveSettings").addEventListener("click",()=>{let url=$("backendUrl").value.trim().replace(/\/+$/,"");if(!url){$("settingsNotice").textContent="Please enter a backend URL.";return;}localStorage.setItem("codete_base",url);modal("settingsModal",false);updateStatus("Backend: "+url);});
+$("settingsClose").addEventListener("click",()=>modal("settingsModal",false));
+updateAccount();if(base())updateStatus("Backend: "+base());
+</script>
+</body>
+</html>
