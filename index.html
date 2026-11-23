@@ -5,132 +5,389 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Codete</title>
+
 <style>
 :root {
-  --bg: #101114;
-  --panel: #191a20;
-  --panel2: #22232b;
-  --text: #eeeeef;
-  --muted: #999ba6;
-  --accent: #8b83ff;
-  --border: #30313a;
+  --bg: #09070f;
+  --bg2: #100b1c;
+  --panel: #151020;
+  --panel2: #1d1530;
+  --border: #302347;
+  --text: #f1ecfa;
+  --muted: #a69bbd;
+  --purple: #a78bfa;
+  --purple2: #7c3aed;
+  --purple3: #c4b5fd;
+  --red: #ff525c;
+  --redbg: #2b1018;
 }
-* { box-sizing: border-box; }
+
+* {
+  box-sizing: border-box;
+}
+
 body {
   margin: 0;
   height: 100vh;
-  display: flex;
-  background: var(--bg);
+  overflow: hidden;
   color: var(--text);
-  font-family: Inter, system-ui, Arial, sans-serif;
+  background:
+    radial-gradient(ellipse at 15% 10%, #25113e66, transparent 40%),
+    radial-gradient(ellipse at 90% 90%, #30134a44, transparent 45%),
+    var(--bg);
+  font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
 }
-button, input, textarea { font: inherit; }
-button {
-  cursor: pointer;
-  color: var(--text);
-  border: 1px solid var(--border);
-  background: var(--panel2);
-  border-radius: 8px;
-  padding: 10px 14px;
-}
-button:hover { filter: brightness(1.15); }
-button:disabled { opacity: .5; cursor: not-allowed; }
 
-#sidebar {
-  width: 250px;
-  background: var(--panel);
-  border-right: 1px solid var(--border);
+/* =========================================================
+   AMBIENT BACKGROUND
+========================================================= */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 50% 0%, #8b5cf612, transparent 50%);
+}
+
+#app {
+  height: 100%;
   display: flex;
   flex-direction: column;
-  padding: 18px;
-  gap: 14px;
 }
-.logo {
-  font-size: 22px;
-  font-weight: 800;
-  letter-spacing: -1px;
-}
-.logo span { color: var(--accent); }
-#newChat { width: 100%; }
-#sidebarBottom {
-  margin-top: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-#main {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  min-width: 0;
-}
-#topbar {
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border);
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+header {
+  height: 76px;
+  padding: 0 25px;
   display: flex;
   align-items: center;
   justify-content: space-between;
+  border-bottom: 1px solid #ffffff08;
+  background: #0d0915cc;
+  backdrop-filter: blur(14px);
+  z-index: 5;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
   gap: 12px;
 }
-#topbar select {
+
+.logo {
+  width: 42px;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 13px;
+  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
+  box-shadow: 0 0 22px #8b5cf633;
+  font-weight: 900;
+  font-size: 20px;
+  position: relative;
+  transition: transform .25s, box-shadow .25s;
+}
+
+.logo:hover {
+  transform: translateY(-3px) rotate(-5deg);
+  box-shadow: 0 0 35px #a78bfa88;
+}
+
+.logo::after {
+  content: "^^";
+  position: absolute;
+  font-size: 11px;
+  top: -12px;
+  opacity: 0;
+  transform: translateY(5px);
+  transition: .2s;
+  color: var(--purple3);
+}
+
+.logo:hover::after {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.brandName {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -.7px;
+}
+
+.brandName span {
+  color: var(--purple);
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#model {
   color: var(--text);
-  background: var(--panel2);
+  background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 8px;
-  padding: 10px;
+  border-radius: 10px;
+  padding: 10px 14px;
+  outline: none;
 }
-#status {
-  font-size: 12px;
-  color: var(--muted);
-  overflow-wrap: anywhere;
+
+#accountBtn {
+  color: var(--text);
+  background: #1b1429;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 10px 14px;
+  cursor: pointer;
 }
+
+/* =========================================================
+   CHAT
+========================================================= */
+
 #chat {
   flex: 1;
   overflow-y: auto;
-  padding: 24px;
+  padding: 30px 5%;
+  scroll-behavior: smooth;
 }
-.message {
-  max-width: 850px;
+
+#chat::-webkit-scrollbar {
+  width: 8px;
+}
+
+#chat::-webkit-scrollbar-thumb {
+  background: #35234c;
+  border-radius: 20px;
+}
+
+#empty {
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -40%);
+  text-align: center;
+  width: 90%;
+  max-width: 600px;
+}
+
+.emptyLogo {
   margin: 0 auto 22px;
+  width: 76px;
+  height: 76px;
+  border-radius: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 32px;
+  font-weight: 900;
+  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
+  box-shadow:
+    0 0 40px #8b5cf633,
+    inset 0 0 20px #ffffff10;
+  animation: float 4s ease-in-out infinite;
+}
+
+#empty h1 {
+  font-size: 35px;
+  letter-spacing: -1px;
+  margin-bottom: 10px;
+}
+
+#empty p {
+  color: var(--muted);
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-7px); }
+}
+
+/* =========================================================
+   MESSAGE ALIGNMENT
+========================================================= */
+
+.messageRow {
+  display: flex;
+  width: 100%;
+  margin-bottom: 28px;
+  animation: appear .25s ease-out;
+}
+
+.messageRow.user {
+  justify-content: flex-end;
+}
+
+.messageRow.assistant {
+  justify-content: flex-start;
+}
+
+@keyframes appear {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.message {
+  max-width: 78%;
+  min-width: 100px;
   line-height: 1.65;
-  white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
-.message.user {
-  background: var(--panel2);
-  border: 1px solid var(--border);
-  padding: 15px;
-  border-radius: 14px;
+
+.user .message {
+  background: linear-gradient(145deg, #27173e, #21132f);
+  border: 1px solid #513575;
+  padding: 16px 20px;
+  border-radius: 18px 18px 5px 18px;
+  box-shadow: 0 8px 30px #00000015;
 }
-.message.assistant { padding: 10px 4px; }
-.message .role {
+
+.assistant .message {
+  padding: 6px 4px;
+}
+
+.messageLabel {
   font-size: 12px;
+  font-weight: 700;
   color: var(--muted);
   margin-bottom: 8px;
-  font-weight: 700;
+  letter-spacing: .4px;
 }
-#empty {
-  text-align: center;
-  margin: 12vh auto;
-  max-width: 650px;
-  color: var(--muted);
+
+.user .messageLabel {
+  text-align: right;
 }
-#empty h1 {
-  color: var(--text);
-  font-size: 32px;
+
+.assistant .messageLabel {
+  display: flex;
+  align-items: center;
+  gap: 9px;
 }
-#composerArea { padding: 15px 20px 20px; }
+
+.miniLogo {
+  width: 25px;
+  height: 25px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
+  color: white;
+  font-size: 12px;
+  font-weight: 900;
+  transition: .2s;
+}
+
+.miniLogo:hover {
+  transform: scale(1.15) rotate(8deg);
+  box-shadow: 0 0 18px #a78bfa66;
+}
+
+/* =========================================================
+   ERROR PANEL
+========================================================= */
+
+.errorBlock {
+  background: var(--redbg);
+  color: #ffb8bd;
+  border: 1px solid #a83340;
+  border-left: 4px solid var(--red);
+  border-radius: 10px;
+  padding: 13px 15px;
+  margin-top: 8px;
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  box-shadow: 0 0 18px #ff334408;
+}
+
+.errorTitle {
+  font-weight: 800;
+  color: #ff737c;
+  margin-bottom: 6px;
+  font-family: system-ui, sans-serif;
+}
+
+/* =========================================================
+   THINKING
+========================================================= */
+
+.thinking {
+  color: var(--purple3);
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.thinkingDots {
+  display: inline-flex;
+  gap: 4px;
+}
+
+.thinkingDots span {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--purple);
+  animation: dot 1.2s infinite;
+}
+
+.thinkingDots span:nth-child(2) {
+  animation-delay: .2s;
+}
+
+.thinkingDots span:nth-child(3) {
+  animation-delay: .4s;
+}
+
+@keyframes dot {
+  0%, 80%, 100% { opacity: .3; transform: translateY(0); }
+  40% { opacity: 1; transform: translateY(-4px); }
+}
+
+/* =========================================================
+   COMPOSER
+========================================================= */
+
+#composerArea {
+  padding: 18px 5% 25px;
+  background: linear-gradient(transparent, #09070fdd 25%);
+}
+
 #composer {
-  max-width: 850px;
+  max-width: 1050px;
   margin: auto;
   display: flex;
-  gap: 10px;
+  gap: 12px;
   align-items: flex-end;
-  background: var(--panel);
-  border: 1px solid var(--border);
-  padding: 12px;
-  border-radius: 16px;
+  padding: 14px;
+  background: #151020;
+  border: 1px solid #392653;
+  border-radius: 18px;
+  box-shadow: 0 0 35px #6d28d910;
+  transition: border-color .2s, box-shadow .2s;
 }
+
+#composer:focus-within {
+  border-color: #7753a5;
+  box-shadow: 0 0 35px #8b5cf620;
+}
+
 #input {
   flex: 1;
   resize: none;
@@ -138,115 +395,212 @@ button:disabled { opacity: .5; cursor: not-allowed; }
   outline: none;
   background: transparent;
   color: var(--text);
-  min-height: 40px;
-  max-height: 180px;
+  min-height: 42px;
+  max-height: 200px;
   padding: 10px;
+  font-size: 15px;
 }
+
+#input::placeholder {
+  color: #81758f;
+}
+
 #send {
-  background: var(--accent);
+  width: 48px;
+  height: 48px;
   border: none;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #8b5cf6, #6d28d9);
   color: white;
-  font-weight: bold;
+  font-size: 20px;
+  font-weight: 800;
+  transition: .2s;
 }
+
+#send:hover {
+  box-shadow: 0 0 25px #8b5cf655;
+  transform: translateY(-2px);
+}
+
+#send:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
 #footnote {
   text-align: center;
+  color: #746783;
   font-size: 11px;
-  color: var(--muted);
-  margin-top: 10px;
+  margin-top: 12px;
 }
+
+/* =========================================================
+   MODAL
+========================================================= */
 
 #modal {
   position: fixed;
   inset: 0;
-  background: #000a;
+  background: #000b;
+  backdrop-filter: blur(8px);
   display: none;
   align-items: center;
   justify-content: center;
   padding: 20px;
+  z-index: 10;
 }
+
 #modalBox {
-  background: var(--panel);
-  border: 1px solid var(--border);
+  background: linear-gradient(160deg, #1b1428, #120d1c);
+  border: 1px solid #392653;
   width: 100%;
   max-width: 460px;
-  border-radius: 16px;
-  padding: 24px;
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: 0 25px 90px #0009;
 }
-#modalBox h2 { margin-top: 0; }
+
+#modalBox h2 {
+  margin-top: 0;
+  font-size: 25px;
+}
+
 #modalContent input {
   width: 100%;
-  padding: 12px;
+  padding: 14px;
   margin: 8px 0;
-  background: var(--bg);
+  background: #0e0b15;
   color: var(--text);
-  border: 1px solid var(--border);
-  border-radius: 8px;
+  border: 1px solid #392653;
+  border-radius: 11px;
+  outline: none;
 }
-.modalButtons {
-  display: flex;
-  gap: 10px;
-  margin-top: 12px;
-  flex-wrap: wrap;
+
+#modalContent input:focus {
+  border-color: var(--purple);
+  box-shadow: 0 0 15px #8b5cf622;
 }
-.modalButtons button { flex: 1; }
+
 #modalNote {
   font-size: 12px;
   color: var(--muted);
-  line-height: 1.5;
+  line-height: 1.6;
 }
+
+.modalButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+  flex-wrap: wrap;
+}
+
+.modalButtons button {
+  flex: 1;
+  min-width: 100px;
+  color: var(--text);
+  background: #241936;
+  border: 1px solid #392653;
+  border-radius: 11px;
+  padding: 12px;
+  cursor: pointer;
+  transition: .2s;
+}
+
+.modalButtons button:hover {
+  background: #33234c;
+}
+
 .modalLink {
   background: none;
   border: none;
-  color: var(--accent);
-  padding: 8px 0;
+  color: var(--purple3);
+  cursor: pointer;
+  padding: 12px 0 0;
   text-decoration: underline;
 }
-#modalLinkRow { text-align: left; }
 
-@media(max-width:650px) {
-  #sidebar { width: 65px; padding: 12px 8px; }
-  #sidebar .logo { font-size: 17px; text-align: center; }
-  #sidebar .sideText { display: none; }
-  #chat { padding: 14px; }
-  #topbar { padding: 12px; }
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media(max-width:700px) {
+  header {
+    padding: 0 12px;
+    height: 68px;
+  }
+
+  .brandName {
+    font-size: 18px;
+  }
+
+  .logo {
+    width: 36px;
+    height: 36px;
+  }
+
+  #model {
+    max-width: 155px;
+    padding: 8px;
+  }
+
+  #chat {
+    padding: 20px 15px;
+  }
+
+  .message {
+    max-width: 95%;
+  }
+
+  #composerArea {
+    padding: 12px 12px 20px;
+  }
+
+  #empty h1 {
+    font-size: 27px;
+  }
 }
 </style>
 </head>
+
 <body>
 
-<aside id="sidebar">
-  <div class="logo">Code<span>te</span></div>
-  <button id="newChat">+ <span class="sideText">New chat</span></button>
-  <div id="sidebarBottom">
-    <button id="accountBtn">Sign in</button>
-    <button id="settingsBtn">Backend settings</button>
-  </div>
-</aside>
+<div id="app">
 
-<main id="main">
-  <header id="topbar">
+<header>
+  <div class="brand">
+    <div class="logo" title="Codete">C</div>
+    <div class="brandName">Code<span>te</span></div>
+  </div>
+
+  <div class="headerRight">
     <select id="model">
       <option value="Codete 1.0">Codete 1.0</option>
       <option value="Codete Advanced 1.0">Codete Advanced 1.0</option>
     </select>
-    <div id="status">Discovering backend...</div>
-  </header>
 
-  <section id="chat">
-    <div id="empty">
-      <h1>What are we building?</h1>
-      <p>Start a conversation with Codete.</p>
-    </div>
-  </section>
-
-  <div id="composerArea">
-    <div id="composer">
-      <textarea id="input" placeholder="Ask Codete anything..." rows="1"></textarea>
-      <button id="send">Send</button>
-    </div>
-    <div id="footnote">Codete may make mistakes. Review generated code.</div>
+    <button id="accountBtn">Sign in</button>
   </div>
-</main>
+</header>
+
+<section id="chat">
+
+  <div id="empty">
+    <div class="emptyLogo">C</div>
+    <h1>Where should we begin?</h1>
+    <p>Build, explore, debug, and create with Codete.</p>
+  </div>
+
+</section>
+
+<div id="composerArea">
+  <div id="composer">
+    <textarea id="input" placeholder="Message Codete..." rows="1"></textarea>
+    <button id="send" title="Send">↑</button>
+  </div>
+  <div id="footnote">Codete can make mistakes. Review generated code.</div>
+</div>
+
+</div>
 
 <div id="modal">
   <div id="modalBox">
@@ -259,7 +613,7 @@ button:disabled { opacity: .5; cursor: not-allowed; }
 
 <script>
 /* =========================================================
-   CONFIG
+   CONFIGURATION
 ========================================================= */
 
 const RELAY_URL =
@@ -272,7 +626,7 @@ let messages = [];
 let busy = false;
 
 /* =========================================================
-   BACKEND URL NORMALIZATION
+   BACKEND
 ========================================================= */
 
 function normalizeBackend(url) {
@@ -280,38 +634,21 @@ function normalizeBackend(url) {
 
   if (!url) return "";
 
-  // Strip an existing /v1 to prevent duplicate /v1/v1
   url = url.replace(/\/v1$/i, "");
 
   return url + "/v1";
 }
 
 function base() {
-  const override = localStorage.getItem("codete_base");
-
-  if (override) return normalizeBackend(override);
-
   return normalizeBackend(discoveredBackend);
 }
 
 function updateStatus(text) {
-  document.getElementById("status").textContent = text;
+  console.log("Codete:", text);
 }
-
-function showBackendStatus() {
-  if (base()) {
-    updateStatus("Backend: " + base());
-  } else {
-    updateStatus("Backend unavailable");
-  }
-}
-
-/* =========================================================
-   RELAY DISCOVERY
-========================================================= */
 
 async function discoverBackend() {
-  updateStatus("Discovering backend...");
+  updateStatus("Discovering backend");
 
   try {
     const response = await fetch(RELAY_URL, {
@@ -329,40 +666,29 @@ async function discoverBackend() {
     }
 
     if (relayText.includes("/relay.txt")) {
-      throw new Error("Relay contains an invalid URL");
+      throw new Error("Relay file contains an invalid backend URL");
     }
 
     discoveredBackend = relayText.replace(/\/+$/, "");
 
-    showBackendStatus();
-
-    console.log("Codete backend:", base());
+    console.log("Backend discovered:", base());
 
   } catch (error) {
     console.error("Relay discovery failed:", error);
-
-    if (localStorage.getItem("codete_base")) {
-      showBackendStatus();
-    } else {
-      updateStatus("Relay failed. Configure backend manually.");
-    }
+    updateStatus("Relay discovery failed");
   }
 }
 
 /* =========================================================
-   API
+   API HELPER
 ========================================================= */
 
 async function apiFetch(path, options = {}) {
-  const backend = base();
-
-  if (!backend) {
-    throw new Error("No backend URL configured.");
+  if (!base()) {
+    throw new Error("Backend is not available yet.");
   }
 
-  // The base already includes /v1.
-  // Never add /v1 to these paths.
-  const url = backend + "/" + path.replace(/^\/+/, "");
+  const url = base() + "/" + path.replace(/^\/+/, "");
 
   const headers = new Headers(options.headers || {});
 
@@ -382,12 +708,46 @@ async function apiFetch(path, options = {}) {
   } catch (error) {
     if (error instanceof TypeError) {
       throw new Error(
-        "Network or CORS error. Check your gateway URL and CORS configuration."
+        "Network or CORS error. The gateway may be unavailable."
       );
     }
 
     throw error;
   }
+}
+
+/* =========================================================
+   ERROR PARSING
+========================================================= */
+
+function extractError(data) {
+  if (!data) return "Unknown error";
+
+  if (typeof data === "string") {
+    return data;
+  }
+
+  if (data.detail) {
+    if (typeof data.detail === "string") {
+      return data.detail;
+    }
+
+    return JSON.stringify(data.detail, null, 2);
+  }
+
+  if (data.error) {
+    if (typeof data.error === "string") {
+      return data.error;
+    }
+
+    return JSON.stringify(data.error, null, 2);
+  }
+
+  if (data.message) {
+    return data.message;
+  }
+
+  return JSON.stringify(data, null, 2);
 }
 
 async function parseResponse(response) {
@@ -402,65 +762,146 @@ async function parseResponse(response) {
   }
 
   if (!response.ok) {
-    throw new Error(
-      data.detail || data.message || data.error || response.statusText
-    );
+    throw new Error(extractError(data));
   }
 
   return data;
 }
 
 /* =========================================================
-   CHAT UI
+   MESSAGE RENDERING
 ========================================================= */
 
 function removeEmpty() {
   const empty = document.getElementById("empty");
-  if (empty) empty.remove();
+
+  if (empty) {
+    empty.remove();
+  }
 }
 
-function addMessage(role, content) {
+function createMessage(role, content = "") {
   removeEmpty();
 
   const chat = document.getElementById("chat");
-  const div = document.createElement("div");
 
-  div.className = "message " + role;
+  const row = document.createElement("div");
+  row.className = "messageRow " + role;
+
+  const box = document.createElement("div");
+  box.className = "message";
 
   const label = document.createElement("div");
-  label.className = "role";
-  label.textContent = role === "user" ? "You" : "Codete";
+  label.className = "messageLabel";
+
+  if (role === "user") {
+    label.textContent = "You";
+  } else {
+    const icon = document.createElement("div");
+    icon.className = "miniLogo";
+    icon.textContent = "C";
+    icon.title = "Codete";
+
+    const name = document.createElement("span");
+    name.textContent = "Codete";
+
+    label.appendChild(icon);
+    label.appendChild(name);
+  }
 
   const body = document.createElement("div");
+  body.className = "messageBody";
   body.textContent = content;
 
-  div.appendChild(label);
-  div.appendChild(body);
+  box.appendChild(label);
+  box.appendChild(body);
 
-  chat.appendChild(div);
+  row.appendChild(box);
+  chat.appendChild(row);
+
   chat.scrollTop = chat.scrollHeight;
 
-  return body;
+  return {
+    row,
+    box,
+    body
+  };
 }
+
+function addMessage(role, content) {
+  return createMessage(role, content).body;
+}
+
+function addErrorMessage(messageObject, errorText) {
+  messageObject.body.textContent = "";
+
+  const error = document.createElement("div");
+  error.className = "errorBlock";
+
+  const title = document.createElement("div");
+  title.className = "errorTitle";
+  title.textContent = "Codete encountered an error";
+
+  const text = document.createElement("div");
+  text.textContent = errorText;
+
+  error.appendChild(title);
+  error.appendChild(text);
+
+  messageObject.body.appendChild(error);
+
+  document.getElementById("chat").scrollTop =
+    document.getElementById("chat").scrollHeight;
+}
+
+/* =========================================================
+   THINKING INDICATOR
+========================================================= */
+
+function showThinking(messageObject) {
+  messageObject.body.textContent = "";
+
+  const thinking = document.createElement("div");
+  thinking.className = "thinking";
+
+  const text = document.createElement("span");
+  text.textContent = "Thinking";
+
+  const dots = document.createElement("div");
+  dots.className = "thinkingDots";
+
+  for (let i = 0; i < 3; i++) {
+    const dot = document.createElement("span");
+    dots.appendChild(dot);
+  }
+
+  thinking.appendChild(text);
+  thinking.appendChild(dots);
+
+  messageObject.body.appendChild(thinking);
+}
+
+/* =========================================================
+   CHAT
+========================================================= */
 
 function newChat() {
   messages = [];
 
   document.getElementById("chat").innerHTML = `
     <div id="empty">
-      <h1>What are we building?</h1>
-      <p>Start a conversation with Codete.</p>
+      <div class="emptyLogo">C</div>
+      <h1>Where should we begin?</h1>
+      <p>Build, explore, debug, and create with Codete.</p>
     </div>
   `;
 }
-
-document.getElementById("newChat").onclick = newChat;
 
 const input = document.getElementById("input");
 
 input.addEventListener("input", () => {
   input.style.height = "auto";
-  input.style.height = Math.min(input.scrollHeight, 180) + "px";
+  input.style.height = Math.min(input.scrollHeight, 200) + "px";
 });
 
 input.addEventListener("keydown", event => {
@@ -469,10 +910,6 @@ input.addEventListener("keydown", event => {
     sendMessage();
   }
 });
-
-/* =========================================================
-   CHAT REQUEST
-========================================================= */
 
 async function sendMessage() {
   if (busy) return;
@@ -487,7 +924,7 @@ async function sendMessage() {
   }
 
   if (!base()) {
-    alert("No backend is configured.");
+    alert("Backend has not been discovered yet.");
     return;
   }
 
@@ -504,7 +941,8 @@ async function sendMessage() {
     content: text
   });
 
-  const responseBody = addMessage("assistant", "Thinking...");
+  const assistantMessage = createMessage("assistant");
+  showThinking(assistantMessage);
 
   try {
     const response = await apiFetch("chat/completions", {
@@ -522,13 +960,13 @@ async function sendMessage() {
 
     let reply = "";
 
-    if (data.choices && data.choices.length) {
+    if (data.choices && data.choices.length > 0) {
       reply = data.choices[0].message?.content || "";
     } else {
       reply = data.response || data.message || JSON.stringify(data);
     }
 
-    responseBody.textContent = reply || "(Empty response)";
+    assistantMessage.body.textContent = reply || "(Empty response)";
 
     messages.push({
       role: "assistant",
@@ -537,14 +975,19 @@ async function sendMessage() {
 
     if (tokensUsed !== null || tokensLeft !== null) {
       updateStatus(
-        "Used: " + (tokensUsed ?? "?") +
+        "Tokens used: " + (tokensUsed ?? "?") +
         " · Remaining: " + (tokensLeft ?? "?")
       );
     }
 
   } catch (error) {
-    responseBody.textContent = "Error: " + error.message;
+    const errorText = error.message || String(error);
+
+    addErrorMessage(assistantMessage, errorText);
+
+    // Do not preserve failed requests in conversation history.
     messages.pop();
+
     console.error(error);
 
   } finally {
@@ -557,7 +1000,7 @@ async function sendMessage() {
 document.getElementById("send").onclick = sendMessage;
 
 /* =========================================================
-   MODAL
+   AUTH MODAL
 ========================================================= */
 
 function openModal(title, content, buttons, linkContent = "") {
@@ -572,6 +1015,7 @@ function openModal(title, content, buttons, linkContent = "") {
     const b = document.createElement("button");
     b.textContent = button.label;
     b.onclick = button.action;
+
     buttonArea.appendChild(b);
   }
 
@@ -581,10 +1025,6 @@ function openModal(title, content, buttons, linkContent = "") {
 function closeModal() {
   document.getElementById("modal").style.display = "none";
 }
-
-/* =========================================================
-   AUTH
-========================================================= */
 
 function openAuth(mode = "signin") {
   const signup = mode === "signup";
@@ -634,6 +1074,10 @@ function openAuth(mode = "signin") {
   document.getElementById("authEmail").focus();
 }
 
+/* =========================================================
+   SIGNUP / SIGNIN
+========================================================= */
+
 async function submitAuth() {
   const email = document.getElementById("authEmail").value.trim();
   const password = document.getElementById("authPassword").value;
@@ -682,8 +1126,6 @@ async function submitAuth() {
     closeModal();
     updateAccount();
 
-    alert("Successfully " + (signupMode ? "signed up" : "signed in") + ".");
-
   } catch (error) {
     alert(error.message);
   }
@@ -705,8 +1147,8 @@ function openForgotPassword() {
       >
 
       <p id="modalNote">
-        Enter the email associated with your Codete account.
-        If recovery is configured, PlayFab will send a recovery email.
+        PlayFab will handle password recovery if it is configured
+        for your account.
       </p>
     `,
     [
@@ -759,7 +1201,7 @@ async function sendRecoveryEmail() {
     );
 
   } catch (error) {
-    alert("Recovery request failed: " + error.message);
+    alert(error.message);
   }
 }
 
@@ -768,8 +1210,11 @@ async function sendRecoveryEmail() {
 ========================================================= */
 
 function updateAccount() {
-  document.getElementById("accountBtn").textContent =
-    apiKey ? (accountName || "Account") : "Sign in";
+  const button = document.getElementById("accountBtn");
+
+  button.textContent = apiKey
+    ? accountName || "Account"
+    : "Sign in";
 }
 
 document.getElementById("accountBtn").onclick = () => {
@@ -804,7 +1249,7 @@ document.getElementById("accountBtn").onclick = () => {
 };
 
 /* =========================================================
-   ESCAPE HTML
+   HTML ESCAPING
 ========================================================= */
 
 function escapeHTML(text) {
@@ -817,97 +1262,12 @@ function escapeHTML(text) {
 }
 
 /* =========================================================
-   BACKEND SETTINGS
-========================================================= */
-
-function openSettings() {
-  const current = localStorage.getItem("codete_base") || "";
-
-  openModal(
-    "Backend settings",
-    `
-      <p id="modalNote">
-        Codete discovers the gateway through relay.txt.
-        You can manually override it here.
-      </p>
-
-      <input
-        id="backendInput"
-        placeholder="https://your-gateway.com"
-        value="${escapeHTML(current)}"
-      >
-
-      <p id="modalNote">
-        Enter the gateway root URL. /v1 is automatically handled.
-        Leave blank to use relay discovery.
-      </p>
-    `,
-    [
-      {
-        label: "Save",
-        action: saveSettings
-      },
-      {
-        label: "Reset to relay",
-        action: resetSettings
-      },
-      {
-        label: "Cancel",
-        action: closeModal
-      }
-    ]
-  );
-}
-
-function saveSettings() {
-  const value = document.getElementById("backendInput").value.trim();
-
-  if (!value) {
-    localStorage.removeItem("codete_base");
-    closeModal();
-    discoverBackend();
-    return;
-  }
-
-  try {
-    const url = new URL(value);
-
-    if (url.protocol !== "https:" && url.protocol !== "http:") {
-      throw new Error("Invalid protocol");
-    }
-
-    localStorage.setItem(
-      "codete_base",
-      url.origin + url.pathname.replace(/\/+$/, "")
-    );
-
-    closeModal();
-    showBackendStatus();
-
-  } catch {
-    alert("Enter a valid HTTP or HTTPS backend URL.");
-  }
-}
-
-function resetSettings() {
-  localStorage.removeItem("codete_base");
-  closeModal();
-  discoverBackend();
-}
-
-document.getElementById("settingsBtn").onclick = openSettings;
-
-/* =========================================================
    STARTUP
 ========================================================= */
 
 updateAccount();
+discoverBackend();
 
-if (localStorage.getItem("codete_base")) {
-  showBackendStatus();
-} else {
-  discoverBackend();
-}
 </script>
 </body>
 </html>
