@@ -24,9 +24,7 @@ body {
   color: var(--text);
   font-family: Inter, system-ui, Arial, sans-serif;
 }
-button, input, textarea {
-  font: inherit;
-}
+button, input, textarea { font: inherit; }
 button {
   cursor: pointer;
   color: var(--text);
@@ -36,6 +34,8 @@ button {
   padding: 10px 14px;
 }
 button:hover { filter: brightness(1.15); }
+button:disabled { opacity: .5; cursor: not-allowed; }
+
 #sidebar {
   width: 250px;
   background: var(--panel);
@@ -102,9 +102,7 @@ button:hover { filter: brightness(1.15); }
   padding: 15px;
   border-radius: 14px;
 }
-.message.assistant {
-  padding: 10px 4px;
-}
+.message.assistant { padding: 10px 4px; }
 .message .role {
   font-size: 12px;
   color: var(--muted);
@@ -121,9 +119,7 @@ button:hover { filter: brightness(1.15); }
   color: var(--text);
   font-size: 32px;
 }
-#composerArea {
-  padding: 15px 20px 20px;
-}
+#composerArea { padding: 15px 20px 20px; }
 #composer {
   max-width: 850px;
   margin: auto;
@@ -158,6 +154,7 @@ button:hover { filter: brightness(1.15); }
   color: var(--muted);
   margin-top: 10px;
 }
+
 #modal {
   position: fixed;
   inset: 0;
@@ -171,12 +168,12 @@ button:hover { filter: brightness(1.15); }
   background: var(--panel);
   border: 1px solid var(--border);
   width: 100%;
-  max-width: 420px;
+  max-width: 460px;
   border-radius: 16px;
   padding: 24px;
 }
 #modalBox h2 { margin-top: 0; }
-#modalBox input {
+#modalContent input {
   width: 100%;
   padding: 12px;
   margin: 8px 0;
@@ -189,6 +186,7 @@ button:hover { filter: brightness(1.15); }
   display: flex;
   gap: 10px;
   margin-top: 12px;
+  flex-wrap: wrap;
 }
 .modalButtons button { flex: 1; }
 #modalNote {
@@ -196,6 +194,15 @@ button:hover { filter: brightness(1.15); }
   color: var(--muted);
   line-height: 1.5;
 }
+.modalLink {
+  background: none;
+  border: none;
+  color: var(--accent);
+  padding: 8px 0;
+  text-decoration: underline;
+}
+#modalLinkRow { text-align: left; }
+
 @media(max-width:650px) {
   #sidebar { width: 65px; padding: 12px 8px; }
   #sidebar .logo { font-size: 17px; text-align: center; }
@@ -211,7 +218,7 @@ button:hover { filter: brightness(1.15); }
   <div class="logo">Code<span>te</span></div>
   <button id="newChat">+ <span class="sideText">New chat</span></button>
   <div id="sidebarBottom">
-    <button id="accountBtn">Account</button>
+    <button id="accountBtn">Sign in</button>
     <button id="settingsBtn">Backend settings</button>
   </div>
 </aside>
@@ -245,13 +252,14 @@ button:hover { filter: brightness(1.15); }
   <div id="modalBox">
     <h2 id="modalTitle">Account</h2>
     <div id="modalContent"></div>
+    <div id="modalLinkRow"></div>
     <div class="modalButtons" id="modalButtons"></div>
   </div>
 </div>
 
 <script>
 /* =========================================================
-   CONFIGURATION
+   CONFIG
 ========================================================= */
 
 const RELAY_URL =
@@ -263,25 +271,16 @@ let accountName = sessionStorage.getItem("codete_account") || "";
 let messages = [];
 let busy = false;
 
-/*
-  Backend URL convention:
-
-  relay.txt should contain ONLY the gateway's root URL.
-  Example:
-  https://your-gateway.example.com
-
-  This app normalizes it into:
-  https://your-gateway.example.com/v1
-
-  Never append /v1 twice.
-*/
+/* =========================================================
+   BACKEND URL NORMALIZATION
+========================================================= */
 
 function normalizeBackend(url) {
   url = (url || "").trim().replace(/\/+$/, "");
 
   if (!url) return "";
 
-  // Remove /v1 if it was already supplied.
+  // Strip an existing /v1 to prevent duplicate /v1/v1
   url = url.replace(/\/v1$/i, "");
 
   return url + "/v1";
@@ -329,16 +328,15 @@ async function discoverBackend() {
       throw new Error("Relay file is empty");
     }
 
-    // Reject accidental file URLs.
     if (relayText.includes("/relay.txt")) {
-      throw new Error("Relay contains a relay-file URL, not a gateway URL");
+      throw new Error("Relay contains an invalid URL");
     }
 
     discoveredBackend = relayText.replace(/\/+$/, "");
 
     showBackendStatus();
 
-    console.log("Codete backend discovered:", base());
+    console.log("Codete backend:", base());
 
   } catch (error) {
     console.error("Relay discovery failed:", error);
@@ -352,7 +350,7 @@ async function discoverBackend() {
 }
 
 /* =========================================================
-   API REQUEST HELPER
+   API
 ========================================================= */
 
 async function apiFetch(path, options = {}) {
@@ -362,7 +360,8 @@ async function apiFetch(path, options = {}) {
     throw new Error("No backend URL configured.");
   }
 
-  // Paths passed here must NOT begin with /v1.
+  // The base already includes /v1.
+  // Never add /v1 to these paths.
   const url = backend + "/" + path.replace(/^\/+/, "");
 
   const headers = new Headers(options.headers || {});
@@ -375,24 +374,20 @@ async function apiFetch(path, options = {}) {
     headers.set("Content-Type", "application/json");
   }
 
-  let response;
-
   try {
-    response = await fetch(url, {
+    return await fetch(url, {
       ...options,
       headers
     });
   } catch (error) {
     if (error instanceof TypeError) {
       throw new Error(
-        "Network or CORS error. Check your gateway CORS configuration and URL."
+        "Network or CORS error. Check your gateway URL and CORS configuration."
       );
     }
 
     throw error;
   }
-
-  return response;
 }
 
 async function parseResponse(response) {
@@ -407,11 +402,8 @@ async function parseResponse(response) {
   }
 
   if (!response.ok) {
-    const errorMessage =
-      data.detail || data.message || data.error || response.statusText;
-
     throw new Error(
-      "HTTP " + response.status + ": " + errorMessage
+      data.detail || data.message || data.error || response.statusText
     );
   }
 
@@ -424,7 +416,6 @@ async function parseResponse(response) {
 
 function removeEmpty() {
   const empty = document.getElementById("empty");
-
   if (empty) empty.remove();
 }
 
@@ -454,6 +445,7 @@ function addMessage(role, content) {
 
 function newChat() {
   messages = [];
+
   document.getElementById("chat").innerHTML = `
     <div id="empty">
       <h1>What are we building?</h1>
@@ -479,7 +471,7 @@ input.addEventListener("keydown", event => {
 });
 
 /* =========================================================
-   SEND CHAT
+   CHAT REQUEST
 ========================================================= */
 
 async function sendMessage() {
@@ -490,7 +482,7 @@ async function sendMessage() {
   if (!text) return;
 
   if (!apiKey) {
-    openAuth();
+    openAuth("signin");
     return;
   }
 
@@ -530,7 +522,7 @@ async function sendMessage() {
 
     let reply = "";
 
-    if (data.choices && data.choices.length > 0) {
+    if (data.choices && data.choices.length) {
       reply = data.choices[0].message?.content || "";
     } else {
       reply = data.response || data.message || JSON.stringify(data);
@@ -545,19 +537,16 @@ async function sendMessage() {
 
     if (tokensUsed !== null || tokensLeft !== null) {
       updateStatus(
-        "Tokens used: " + (tokensUsed ?? "?") +
+        "Used: " + (tokensUsed ?? "?") +
         " · Remaining: " + (tokensLeft ?? "?")
       );
     }
 
   } catch (error) {
     responseBody.textContent = "Error: " + error.message;
-
-    // Remove the failed user message from the conversation
-    // so it is not resent on the next request.
     messages.pop();
-
     console.error(error);
+
   } finally {
     busy = false;
     document.getElementById("send").disabled = false;
@@ -568,21 +557,22 @@ async function sendMessage() {
 document.getElementById("send").onclick = sendMessage;
 
 /* =========================================================
-   AUTHENTICATION
+   MODAL
 ========================================================= */
 
-function openModal(title, content, buttons) {
+function openModal(title, content, buttons, linkContent = "") {
   document.getElementById("modalTitle").textContent = title;
   document.getElementById("modalContent").innerHTML = content;
-  document.getElementById("modalButtons").innerHTML = "";
+  document.getElementById("modalLinkRow").innerHTML = linkContent;
+
+  const buttonArea = document.getElementById("modalButtons");
+  buttonArea.innerHTML = "";
 
   for (const button of buttons) {
     const b = document.createElement("button");
-
     b.textContent = button.label;
     b.onclick = button.action;
-
-    document.getElementById("modalButtons").appendChild(b);
+    buttonArea.appendChild(b);
   }
 
   document.getElementById("modal").style.display = "flex";
@@ -592,14 +582,30 @@ function closeModal() {
   document.getElementById("modal").style.display = "none";
 }
 
+/* =========================================================
+   AUTH
+========================================================= */
+
 function openAuth(mode = "signin") {
   const signup = mode === "signup";
 
   openModal(
     signup ? "Create account" : "Sign in",
     `
-      <input id="authUsername" placeholder="Username" autocomplete="username">
-      <input id="authPassword" type="password" placeholder="Password" autocomplete="${signup ? "new-password" : "current-password"}">
+      <input
+        id="authEmail"
+        type="email"
+        placeholder="Email address"
+        autocomplete="email"
+      >
+
+      <input
+        id="authPassword"
+        type="password"
+        placeholder="Password"
+        autocomplete="${signup ? "new-password" : "current-password"}"
+      >
+
       <p id="modalNote">
         Authentication is handled by the Codete gateway.
       </p>
@@ -617,18 +623,28 @@ function openAuth(mode = "signin") {
         label: "Cancel",
         action: closeModal
       }
-    ]
+    ],
+    signup ? "" : `
+      <button class="modalLink" onclick="openForgotPassword()">
+        Forgot password?
+      </button>
+    `
   );
 
-  document.getElementById("authUsername").focus();
+  document.getElementById("authEmail").focus();
 }
 
 async function submitAuth() {
-  const username = document.getElementById("authUsername").value.trim();
+  const email = document.getElementById("authEmail").value.trim();
   const password = document.getElementById("authPassword").value;
 
-  if (!username || !password) {
-    alert("Enter your username and password.");
+  if (!email || !password) {
+    alert("Enter your email and password.");
+    return;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Please enter a valid email address.");
     return;
   }
 
@@ -640,12 +656,9 @@ async function submitAuth() {
   try {
     const response = await apiFetch(endpoint, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json"
-      },
       body: JSON.stringify({
-        username,
-        password
+        email: email,
+        password: password
       })
     });
 
@@ -657,11 +670,11 @@ async function submitAuth() {
       data.access_token;
 
     if (!key) {
-      throw new Error("The server did not return an API key.");
+      throw new Error("Server did not return an API key.");
     }
 
     apiKey = key;
-    accountName = data.username || username;
+    accountName = data.email || email;
 
     sessionStorage.setItem("codete_api_key", apiKey);
     sessionStorage.setItem("codete_account", accountName);
@@ -676,48 +689,122 @@ async function submitAuth() {
   }
 }
 
-function updateAccount() {
-  const button = document.getElementById("accountBtn");
+/* =========================================================
+   PASSWORD RECOVERY
+========================================================= */
 
-  if (apiKey) {
-    button.textContent = accountName || "Account";
-  } else {
-    button.textContent = "Sign in";
+function openForgotPassword() {
+  openModal(
+    "Reset password",
+    `
+      <input
+        id="recoveryEmail"
+        type="email"
+        placeholder="Account email"
+        autocomplete="email"
+      >
+
+      <p id="modalNote">
+        Enter the email associated with your Codete account.
+        If recovery is configured, PlayFab will send a recovery email.
+      </p>
+    `,
+    [
+      {
+        label: "Send recovery email",
+        action: sendRecoveryEmail
+      },
+      {
+        label: "Back to sign in",
+        action: () => openAuth("signin")
+      },
+      {
+        label: "Cancel",
+        action: closeModal
+      }
+    ]
+  );
+
+  document.getElementById("recoveryEmail").focus();
+}
+
+async function sendRecoveryEmail() {
+  const email = document.getElementById("recoveryEmail").value.trim();
+
+  if (!email) {
+    alert("Enter your email address.");
+    return;
+  }
+
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    alert("Please enter a valid email address.");
+    return;
+  }
+
+  try {
+    const response = await apiFetch("auth/forgot-password", {
+      method: "POST",
+      body: JSON.stringify({
+        email: email
+      })
+    });
+
+    const data = await parseResponse(response);
+
+    closeModal();
+
+    alert(
+      data.message ||
+      "If an account is associated with that email, a recovery email may be sent."
+    );
+
+  } catch (error) {
+    alert("Recovery request failed: " + error.message);
   }
 }
 
+/* =========================================================
+   ACCOUNT
+========================================================= */
+
+function updateAccount() {
+  document.getElementById("accountBtn").textContent =
+    apiKey ? (accountName || "Account") : "Sign in";
+}
+
 document.getElementById("accountBtn").onclick = () => {
-  if (apiKey) {
-    openModal(
-      "Account",
-      `<p>Signed in as <strong>${escapeHTML(accountName)}</strong></p>`,
-      [
-        {
-          label: "Sign out",
-          action: () => {
-            apiKey = "";
-            accountName = "";
-
-            sessionStorage.removeItem("codete_api_key");
-            sessionStorage.removeItem("codete_account");
-
-            updateAccount();
-            closeModal();
-          }
-        },
-        {
-          label: "Close",
-          action: closeModal
-        }
-      ]
-    );
-  } else {
+  if (!apiKey) {
     openAuth("signin");
+    return;
   }
+
+  openModal(
+    "Account",
+    `<p>Signed in as <strong>${escapeHTML(accountName)}</strong></p>`,
+    [
+      {
+        label: "Sign out",
+        action: () => {
+          apiKey = "";
+          accountName = "";
+
+          sessionStorage.removeItem("codete_api_key");
+          sessionStorage.removeItem("codete_account");
+
+          updateAccount();
+          closeModal();
+        }
+      },
+      {
+        label: "Close",
+        action: closeModal
+      }
+    ]
+  );
 };
 
 /* =========================================================
-   BACKEND SETTINGS
+   ESCAPE HTML
 ========================================================= */
 
 function escapeHTML(text) {
@@ -729,6 +816,10 @@ function escapeHTML(text) {
     .replaceAll("'", "&#039;");
 }
 
+/* =========================================================
+   BACKEND SETTINGS
+========================================================= */
+
 function openSettings() {
   const current = localStorage.getItem("codete_base") || "";
 
@@ -736,10 +827,16 @@ function openSettings() {
     "Backend settings",
     `
       <p id="modalNote">
-        Codete automatically discovers your gateway through relay.txt.
-        You can override it here if needed.
+        Codete discovers the gateway through relay.txt.
+        You can manually override it here.
       </p>
-      <input id="backendInput" placeholder="https://your-server.com" value="${escapeHTML(current)}">
+
+      <input
+        id="backendInput"
+        placeholder="https://your-gateway.com"
+        value="${escapeHTML(current)}"
+      >
+
       <p id="modalNote">
         Enter the gateway root URL. /v1 is automatically handled.
         Leave blank to use relay discovery.
@@ -779,13 +876,16 @@ function saveSettings() {
       throw new Error("Invalid protocol");
     }
 
-    localStorage.setItem("codete_base", url.origin + url.pathname.replace(/\/+$/, ""));
+    localStorage.setItem(
+      "codete_base",
+      url.origin + url.pathname.replace(/\/+$/, "")
+    );
 
     closeModal();
     showBackendStatus();
 
   } catch {
-    alert("Please enter a valid HTTP or HTTPS backend URL.");
+    alert("Enter a valid HTTP or HTTPS backend URL.");
   }
 }
 
