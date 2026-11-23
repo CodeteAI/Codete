@@ -59,7 +59,7 @@ button,input,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:
 </div>
 <div class="modal" id="settingsModal">
   <div class="card">
-    <h2>Backend connection</h2><p>Enter the base address of your gateway. Example: http://localhost:8000</p>
+    <h2>Backend connection</h2><p>Relay is auto-discovered from relay.txt. Enter a URL to override it for development, or leave blank to use the relay. Example: http://localhost:8000</p>
     <input id="backendUrl" type="url" placeholder="http://localhost:8000">
     <div class="notice" id="settingsNotice"></div>
     <div class="row"><button id="saveSettings">Save</button><button class="outline" id="settingsClose">Cancel</button></div>
@@ -70,7 +70,22 @@ const $ = id => document.getElementById(id);
 let apiKey = sessionStorage.getItem("codete_key") || "";
 let messages = [];
 let busy = false;
-const base = () => (localStorage.getItem("codete_base") || "").replace(/\/+$/,"");
+const RELAY_URL = "https://raw.githubusercontent.com/CodeteAI/Codete/refs/heads/main/relay.txt";
+let discoveredBase = "";
+const base = () => (localStorage.getItem("codete_base") || discoveredBase || "").replace(/\/+$/,"");
+async function discoverBackend(){
+  try{
+    const res = await fetch(RELAY_URL, {cache:"no-store"});
+    if(!res.ok) throw new Error("Relay lookup failed ("+res.status+")");
+    discoveredBase = (await res.text()).trim();
+    if(!discoveredBase) throw new Error("Relay file was empty");
+    if(!discoveredBase.endsWith("/v1")) discoveredBase = discoveredBase.replace(/\/+$/,"")+"/v1";
+    updateStatus("Backend: "+base());
+  }catch(e){
+    updateStatus("Relay lookup failed · configure backend manually");
+    console.warn("Codete relay discovery:", e);
+  }
+}
 
 function updateStatus(text){ $("status").textContent=text; }
 function updateAccount(){
@@ -122,9 +137,9 @@ $("authButton").addEventListener("click",()=>{if(apiKey){apiKey="";sessionStorag
 $("signin").addEventListener("click",()=>auth("signin"));$("signup").addEventListener("click",()=>auth("signup"));
 $("authClose").addEventListener("click",()=>modal("authModal",false));
 $("settingsButton").addEventListener("click",()=>{$("backendUrl").value=localStorage.getItem("codete_base")||"";$("settingsNotice").textContent="";modal("settingsModal",true);});
-$("saveSettings").addEventListener("click",()=>{let url=$("backendUrl").value.trim().replace(/\/+$/,"");if(!url){$("settingsNotice").textContent="Please enter a backend URL.";return;}localStorage.setItem("codete_base",url);modal("settingsModal",false);updateStatus("Backend: "+url);});
+$("saveSettings").addEventListener("click",()=>{let url=$("backendUrl").value.trim().replace(/\/+$/,"");if(!url){localStorage.removeItem("codete_base");modal("settingsModal",false);updateStatus(discoveredBase?"Relay backend: "+discoveredBase:"Backend unavailable");return;}if(!url.endsWith("/v1"))url+="/v1";localStorage.setItem("codete_base",url);modal("settingsModal",false);updateStatus("Backend: "+url);});
 $("settingsClose").addEventListener("click",()=>modal("settingsModal",false));
-updateAccount();if(base())updateStatus("Backend: "+base());
+updateAccount();if(localStorage.getItem("codete_base"))updateStatus("Backend: "+base());else discoverBackend();
 </script>
 </body>
 </html>
