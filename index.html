@@ -1,145 +1,813 @@
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Codete · AI Workspace</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Codete</title>
 <style>
-:root{color-scheme:dark;--bg:#0b0d12;--panel:#12151c;--panel2:#181c25;--line:#272c38;--text:#eef1f7;--muted:#929aab;--accent:#8b7cff;--accent2:#6d5df5;--danger:#ff7777}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font:15px/1.5 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto,sans-serif;height:100vh}
-button,input,textarea{font:inherit}button{cursor:pointer;border:0;border-radius:10px;padding:10px 14px;color:white;background:var(--accent2);font-weight:600}button:hover{filter:brightness(1.12)}button:disabled{opacity:.5;cursor:default}
-.shell{height:100vh;display:grid;grid-template-columns:260px 1fr}.side{border-right:1px solid var(--line);background:#0e1016;padding:20px;display:flex;flex-direction:column;gap:18px}.brand{font-size:20px;font-weight:800;letter-spacing:.3px}.brand span{color:var(--accent)}.sub{color:var(--muted);font-size:12px}.side button{width:100%;text-align:left}.outline{background:transparent;border:1px solid var(--line);color:var(--text)}.sidefoot{margin-top:auto;display:grid;gap:10px}.main{display:flex;min-width:0;flex-direction:column}.top{height:68px;border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 26px;gap:15px}.top select,.top input{background:var(--panel2);color:var(--text);border:1px solid var(--line);padding:9px 12px;border-radius:9px}.status{font-size:12px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.messages{flex:1;overflow:auto;padding:24px max(24px,calc((100% - 850px)/2));display:flex;flex-direction:column;gap:20px}.welcome{margin:auto;max-width:650px;text-align:center}.welcome h1{font-size:32px;margin:0 0 10px}.welcome p{color:var(--muted)}.msg{max-width:850px;width:100%;display:flex;gap:12px;align-items:flex-start}.msg.user{align-self:flex-end;flex-direction:row-reverse}.avatar{flex:none;width:34px;height:34px;border-radius:10px;background:var(--panel2);border:1px solid var(--line);display:grid;place-items:center;font-size:12px;font-weight:700}.msg.user .avatar{background:#29234c}.bubble{padding:13px 16px;border:1px solid var(--line);border-radius:14px;background:var(--panel);white-space:pre-wrap;overflow-wrap:anywhere;max-width:calc(100% - 46px)}.msg.user .bubble{background:#201d35}.composer-wrap{padding:14px 24px 24px}.composer{max-width:850px;margin:auto;border:1px solid var(--line);background:var(--panel);border-radius:15px;padding:10px;display:flex;gap:10px;align-items:flex-end}.composer textarea{flex:1;resize:none;min-height:44px;max-height:180px;background:transparent;color:var(--text);border:0;outline:0;padding:10px}.hint{max-width:850px;margin:8px auto 0;color:var(--muted);font-size:11px}.modal{position:fixed;inset:0;background:#0009;display:none;place-items:center;padding:18px}.modal.show{display:grid}.card{width:min(430px,100%);background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:24px;box-shadow:0 20px 80px #0007}.card h2{margin:0 0 4px}.card p{color:var(--muted);font-size:13px}.card input{width:100%;margin:8px 0;background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:10px;padding:12px}.card .row{display:flex;gap:10px;margin-top:12px}.card .row button{flex:1}.notice{color:var(--danger);font-size:13px;min-height:20px}.hide{display:none!important}
-@media(max-width:700px){.shell{grid-template-columns:1fr}.side{display:none}.top{padding:0 14px}.messages{padding:18px 14px}.composer-wrap{padding:12px 14px 18px}.top .status{max-width:40vw}}
+:root {
+  --bg: #101114;
+  --panel: #191a20;
+  --panel2: #22232b;
+  --text: #eeeeef;
+  --muted: #999ba6;
+  --accent: #8b83ff;
+  --border: #30313a;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  height: 100vh;
+  display: flex;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Inter, system-ui, Arial, sans-serif;
+}
+button, input, textarea {
+  font: inherit;
+}
+button {
+  cursor: pointer;
+  color: var(--text);
+  border: 1px solid var(--border);
+  background: var(--panel2);
+  border-radius: 8px;
+  padding: 10px 14px;
+}
+button:hover { filter: brightness(1.15); }
+#sidebar {
+  width: 250px;
+  background: var(--panel);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  padding: 18px;
+  gap: 14px;
+}
+.logo {
+  font-size: 22px;
+  font-weight: 800;
+  letter-spacing: -1px;
+}
+.logo span { color: var(--accent); }
+#newChat { width: 100%; }
+#sidebarBottom {
+  margin-top: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+#main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+#topbar {
+  padding: 14px 20px;
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+#topbar select {
+  color: var(--text);
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px;
+}
+#status {
+  font-size: 12px;
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+#chat {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px;
+}
+.message {
+  max-width: 850px;
+  margin: 0 auto 22px;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.message.user {
+  background: var(--panel2);
+  border: 1px solid var(--border);
+  padding: 15px;
+  border-radius: 14px;
+}
+.message.assistant {
+  padding: 10px 4px;
+}
+.message .role {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+#empty {
+  text-align: center;
+  margin: 12vh auto;
+  max-width: 650px;
+  color: var(--muted);
+}
+#empty h1 {
+  color: var(--text);
+  font-size: 32px;
+}
+#composerArea {
+  padding: 15px 20px 20px;
+}
+#composer {
+  max-width: 850px;
+  margin: auto;
+  display: flex;
+  gap: 10px;
+  align-items: flex-end;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 12px;
+  border-radius: 16px;
+}
+#input {
+  flex: 1;
+  resize: none;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: var(--text);
+  min-height: 40px;
+  max-height: 180px;
+  padding: 10px;
+}
+#send {
+  background: var(--accent);
+  border: none;
+  color: white;
+  font-weight: bold;
+}
+#footnote {
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+#modal {
+  position: fixed;
+  inset: 0;
+  background: #000a;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+#modalBox {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  width: 100%;
+  max-width: 420px;
+  border-radius: 16px;
+  padding: 24px;
+}
+#modalBox h2 { margin-top: 0; }
+#modalBox input {
+  width: 100%;
+  padding: 12px;
+  margin: 8px 0;
+  background: var(--bg);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.modalButtons {
+  display: flex;
+  gap: 10px;
+  margin-top: 12px;
+}
+.modalButtons button { flex: 1; }
+#modalNote {
+  font-size: 12px;
+  color: var(--muted);
+  line-height: 1.5;
+}
+@media(max-width:650px) {
+  #sidebar { width: 65px; padding: 12px 8px; }
+  #sidebar .logo { font-size: 17px; text-align: center; }
+  #sidebar .sideText { display: none; }
+  #chat { padding: 14px; }
+  #topbar { padding: 12px; }
+}
 </style>
 </head>
 <body>
-<div class="shell">
-  <aside class="side">
-    <div><div class="brand">Codete<span>.</span></div><div class="sub">AI coding workspace</div></div>
-    <button id="newChat" class="outline">＋ New chat</button>
-    <div class="sub">Your workspace</div>
-    <div class="sidefoot">
-      <button id="authButton" class="outline">Sign in / Sign up</button>
-      <button id="settingsButton" class="outline">Backend settings</button>
-      <div class="sub" id="accountInfo">Not signed in</div>
+
+<aside id="sidebar">
+  <div class="logo">Code<span>te</span></div>
+  <button id="newChat">+ <span class="sideText">New chat</span></button>
+  <div id="sidebarBottom">
+    <button id="accountBtn">Account</button>
+    <button id="settingsBtn">Backend settings</button>
+  </div>
+</aside>
+
+<main id="main">
+  <header id="topbar">
+    <select id="model">
+      <option value="Codete 1.0">Codete 1.0</option>
+      <option value="Codete Advanced 1.0">Codete Advanced 1.0</option>
+    </select>
+    <div id="status">Discovering backend...</div>
+  </header>
+
+  <section id="chat">
+    <div id="empty">
+      <h1>What are we building?</h1>
+      <p>Start a conversation with Codete.</p>
     </div>
-  </aside>
-  <main class="main">
-    <header class="top">
-      <select id="model">
-        <option>Codete 1.0</option>
-        <option>Codete Advanced 1.0</option>
-      </select>
-      <div class="status" id="status">Backend not configured</div>
-    </header>
-    <section class="messages" id="messages">
-      <div class="welcome" id="welcome">
-        <h1>What are we building?</h1>
-        <p>Ask Codete to help you plan, debug, or write code.</p>
-      </div>
-    </section>
-    <div class="composer-wrap">
-      <div class="composer">
-        <textarea id="input" rows="1" placeholder="Message Codete..."></textarea>
-        <button id="send">Send</button>
-      </div>
-      <div class="hint">Enter to send · Shift+Enter for a new line</div>
+  </section>
+
+  <div id="composerArea">
+    <div id="composer">
+      <textarea id="input" placeholder="Ask Codete anything..." rows="1"></textarea>
+      <button id="send">Send</button>
     </div>
-  </main>
-</div>
-<div class="modal" id="authModal">
-  <div class="card">
-    <h2>Access Codete</h2><p>Sign in or create an account with your Codete backend.</p>
-    <input id="email" type="email" placeholder="Email" autocomplete="email">
-    <input id="password" type="password" placeholder="Password" autocomplete="current-password">
-    <div class="notice" id="authNotice"></div>
-    <div class="row"><button id="signin">Sign in</button><button id="signup">Sign up</button></div>
-    <div class="row"><button class="outline" id="authClose">Cancel</button></div>
+    <div id="footnote">Codete may make mistakes. Review generated code.</div>
+  </div>
+</main>
+
+<div id="modal">
+  <div id="modalBox">
+    <h2 id="modalTitle">Account</h2>
+    <div id="modalContent"></div>
+    <div class="modalButtons" id="modalButtons"></div>
   </div>
 </div>
-<div class="modal" id="settingsModal">
-  <div class="card">
-    <h2>Backend connection</h2><p>Relay is auto-discovered from relay.txt. Enter a URL to override it for development, or leave blank to use the relay. Example: http://localhost:8000</p>
-    <input id="backendUrl" type="url" placeholder="http://localhost:8000">
-    <div class="notice" id="settingsNotice"></div>
-    <div class="row"><button id="saveSettings">Save</button><button class="outline" id="settingsClose">Cancel</button></div>
-  </div>
-</div>
+
 <script>
-const $ = id => document.getElementById(id);
-let apiKey = sessionStorage.getItem("codete_key") || "";
+/* =========================================================
+   CONFIGURATION
+========================================================= */
+
+const RELAY_URL =
+  "https://raw.githubusercontent.com/CodeteAI/Codete/refs/heads/main/relay.txt";
+
+let discoveredBackend = "";
+let apiKey = sessionStorage.getItem("codete_api_key") || "";
+let accountName = sessionStorage.getItem("codete_account") || "";
 let messages = [];
 let busy = false;
-const RELAY_URL = "https://raw.githubusercontent.com/CodeteAI/Codete/refs/heads/main/relay.txt";
-let discoveredBase = "";
-const base = () => (localStorage.getItem("codete_base") || discoveredBase || "").replace(/\/+$/,"");
-async function discoverBackend(){
-  try{
-    const res = await fetch(RELAY_URL, {cache:"no-store"});
-    if(!res.ok) throw new Error("Relay lookup failed ("+res.status+")");
-    discoveredBase = (await res.text()).trim();
-    if(!discoveredBase) throw new Error("Relay file was empty");
-    if(!discoveredBase.endsWith("/v1")) discoveredBase = discoveredBase.replace(/\/+$/,"")+"/v1";
-    updateStatus("Backend: "+base());
-  }catch(e){
-    updateStatus("Relay lookup failed · configure backend manually");
-    console.warn("Codete relay discovery:", e);
+
+/*
+  Backend URL convention:
+
+  relay.txt should contain ONLY the gateway's root URL.
+  Example:
+  https://your-gateway.example.com
+
+  This app normalizes it into:
+  https://your-gateway.example.com/v1
+
+  Never append /v1 twice.
+*/
+
+function normalizeBackend(url) {
+  url = (url || "").trim().replace(/\/+$/, "");
+
+  if (!url) return "";
+
+  // Remove /v1 if it was already supplied.
+  url = url.replace(/\/v1$/i, "");
+
+  return url + "/v1";
+}
+
+function base() {
+  const override = localStorage.getItem("codete_base");
+
+  if (override) return normalizeBackend(override);
+
+  return normalizeBackend(discoveredBackend);
+}
+
+function updateStatus(text) {
+  document.getElementById("status").textContent = text;
+}
+
+function showBackendStatus() {
+  if (base()) {
+    updateStatus("Backend: " + base());
+  } else {
+    updateStatus("Backend unavailable");
   }
 }
 
-function updateStatus(text){ $("status").textContent=text; }
-function updateAccount(){
-  $("accountInfo").textContent=apiKey?"Signed in · session key saved":"Not signed in";
-  $("authButton").textContent=apiKey?"Sign out":"Sign in / Sign up";
+/* =========================================================
+   RELAY DISCOVERY
+========================================================= */
+
+async function discoverBackend() {
+  updateStatus("Discovering backend...");
+
+  try {
+    const response = await fetch(RELAY_URL, {
+      cache: "no-store"
+    });
+
+    if (!response.ok) {
+      throw new Error("Relay HTTP " + response.status);
+    }
+
+    const relayText = (await response.text()).trim();
+
+    if (!relayText) {
+      throw new Error("Relay file is empty");
+    }
+
+    // Reject accidental file URLs.
+    if (relayText.includes("/relay.txt")) {
+      throw new Error("Relay contains a relay-file URL, not a gateway URL");
+    }
+
+    discoveredBackend = relayText.replace(/\/+$/, "");
+
+    showBackendStatus();
+
+    console.log("Codete backend discovered:", base());
+
+  } catch (error) {
+    console.error("Relay discovery failed:", error);
+
+    if (localStorage.getItem("codete_base")) {
+      showBackendStatus();
+    } else {
+      updateStatus("Relay failed. Configure backend manually.");
+    }
+  }
 }
-function modal(id,show){$(id).classList.toggle("show",show);}
-function addMessage(role,text){
-  $("welcome").classList.add("hide");
-  const row=document.createElement("div");row.className="msg "+(role==="user"?"user":"assistant");
-  const av=document.createElement("div");av.className="avatar";av.textContent=role==="user"?"YOU":"CD";
-  const bubble=document.createElement("div");bubble.className="bubble";bubble.textContent=text;
-  row.append(av,bubble);$("messages").appendChild(row);$("messages").scrollTop=$("messages").scrollHeight;
-  return bubble;
+
+/* =========================================================
+   API REQUEST HELPER
+========================================================= */
+
+async function apiFetch(path, options = {}) {
+  const backend = base();
+
+  if (!backend) {
+    throw new Error("No backend URL configured.");
+  }
+
+  // Paths passed here must NOT begin with /v1.
+  const url = backend + "/" + path.replace(/^\/+/, "");
+
+  const headers = new Headers(options.headers || {});
+
+  if (apiKey) {
+    headers.set("Authorization", "Bearer " + apiKey);
+  }
+
+  if (options.body && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  let response;
+
+  try {
+    response = await fetch(url, {
+      ...options,
+      headers
+    });
+  } catch (error) {
+    if (error instanceof TypeError) {
+      throw new Error(
+        "Network or CORS error. Check your gateway CORS configuration and URL."
+      );
+    }
+
+    throw error;
+  }
+
+  return response;
 }
-function clearChat(){messages=[];$("messages").innerHTML="";$("messages").appendChild($("welcome"));$("welcome").classList.remove("hide");}
-async function auth(mode){
-  const b=base(); if(!b){$("authNotice").textContent="Set your backend URL first.";return;}
-  $("authNotice").textContent="";
-  try{
-    const res=await fetch(b+"/v1/auth/"+mode,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({email:$("email").value.trim(),password:$("password").value})});
-    const data=await res.json();
-    if(!res.ok)throw new Error(data.detail||data.errorMessage||"Authentication failed");
-    apiKey=data.api_key;sessionStorage.setItem("codete_key",apiKey);updateAccount();modal("authModal",false);updateStatus("Connected · "+(data.plan||"account"));
-  }catch(e){$("authNotice").textContent=e.message;}
+
+async function parseResponse(response) {
+  const text = await response.text();
+
+  let data;
+
+  try {
+    data = text ? JSON.parse(text) : {};
+  } catch {
+    data = { detail: text };
+  }
+
+  if (!response.ok) {
+    const errorMessage =
+      data.detail || data.message || data.error || response.statusText;
+
+    throw new Error(
+      "HTTP " + response.status + ": " + errorMessage
+    );
+  }
+
+  return data;
 }
-async function send(){
-  if(busy)return;const text=$("input").value.trim();if(!text)return;
-  if(!base()){modal("settingsModal",true);$("settingsNotice").textContent="";return;}
-  if(!apiKey){modal("authModal",true);return;}
-  busy=true;$("send").disabled=true;$("input").disabled=true;
-  $("input").value="";addMessage("user",text);messages.push({role:"user",content:text});
-  const pending=addMessage("assistant","Thinking...");
-  try{
-    const res=await fetch(base()+"/v1/chat/completions",{method:"POST",headers:{"Content-Type":"application/json","Authorization":"Bearer "+apiKey},body:JSON.stringify({model:$("model").value,messages:messages,stream:false})});
-    if(res.status===401){apiKey="";sessionStorage.removeItem("codete_key");updateAccount();throw new Error("Your key was rejected. Please sign in again.");}
-    const data=await res.json();if(!res.ok)throw new Error(data.detail||data.error||"Request failed ("+res.status+")");
-    const reply=data.choices?.[0]?.message?.content??"(No response content)";
-    pending.textContent=reply;messages.push({role:"assistant",content:reply});
-    const used=res.headers.get("X-Codete-Tokens-Used"),left=res.headers.get("X-Codete-Tokens-Left");
-    updateStatus(used!==null?("Usage: "+used+" · Remaining: "+(left??"unknown")):"Connected");
-  }catch(e){pending.textContent="Error: "+e.message;messages.pop();}
-  finally{busy=false;$("send").disabled=false;$("input").disabled=false;$("input").focus();}
+
+/* =========================================================
+   CHAT UI
+========================================================= */
+
+function removeEmpty() {
+  const empty = document.getElementById("empty");
+
+  if (empty) empty.remove();
 }
-$("send").addEventListener("click",send);
-$("input").addEventListener("keydown",e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();send();}});
-$("newChat").addEventListener("click",clearChat);
-$("authButton").addEventListener("click",()=>{if(apiKey){apiKey="";sessionStorage.removeItem("codete_key");updateAccount();updateStatus("Signed out");}else modal("authModal",true);});
-$("signin").addEventListener("click",()=>auth("signin"));$("signup").addEventListener("click",()=>auth("signup"));
-$("authClose").addEventListener("click",()=>modal("authModal",false));
-$("settingsButton").addEventListener("click",()=>{$("backendUrl").value=localStorage.getItem("codete_base")||"";$("settingsNotice").textContent="";modal("settingsModal",true);});
-$("saveSettings").addEventListener("click",()=>{let url=$("backendUrl").value.trim().replace(/\/+$/,"");if(!url){localStorage.removeItem("codete_base");modal("settingsModal",false);updateStatus(discoveredBase?"Relay backend: "+discoveredBase:"Backend unavailable");return;}if(!url.endsWith("/v1"))url+="/v1";localStorage.setItem("codete_base",url);modal("settingsModal",false);updateStatus("Backend: "+url);});
-$("settingsClose").addEventListener("click",()=>modal("settingsModal",false));
-updateAccount();if(localStorage.getItem("codete_base"))updateStatus("Backend: "+base());else discoverBackend();
+
+function addMessage(role, content) {
+  removeEmpty();
+
+  const chat = document.getElementById("chat");
+  const div = document.createElement("div");
+
+  div.className = "message " + role;
+
+  const label = document.createElement("div");
+  label.className = "role";
+  label.textContent = role === "user" ? "You" : "Codete";
+
+  const body = document.createElement("div");
+  body.textContent = content;
+
+  div.appendChild(label);
+  div.appendChild(body);
+
+  chat.appendChild(div);
+  chat.scrollTop = chat.scrollHeight;
+
+  return body;
+}
+
+function newChat() {
+  messages = [];
+  document.getElementById("chat").innerHTML = `
+    <div id="empty">
+      <h1>What are we building?</h1>
+      <p>Start a conversation with Codete.</p>
+    </div>
+  `;
+}
+
+document.getElementById("newChat").onclick = newChat;
+
+const input = document.getElementById("input");
+
+input.addEventListener("input", () => {
+  input.style.height = "auto";
+  input.style.height = Math.min(input.scrollHeight, 180) + "px";
+});
+
+input.addEventListener("keydown", event => {
+  if (event.key === "Enter" && !event.shiftKey) {
+    event.preventDefault();
+    sendMessage();
+  }
+});
+
+/* =========================================================
+   SEND CHAT
+========================================================= */
+
+async function sendMessage() {
+  if (busy) return;
+
+  const text = input.value.trim();
+
+  if (!text) return;
+
+  if (!apiKey) {
+    openAuth();
+    return;
+  }
+
+  if (!base()) {
+    alert("No backend is configured.");
+    return;
+  }
+
+  busy = true;
+  document.getElementById("send").disabled = true;
+
+  input.value = "";
+  input.style.height = "auto";
+
+  addMessage("user", text);
+
+  messages.push({
+    role: "user",
+    content: text
+  });
+
+  const responseBody = addMessage("assistant", "Thinking...");
+
+  try {
+    const response = await apiFetch("chat/completions", {
+      method: "POST",
+      body: JSON.stringify({
+        model: document.getElementById("model").value,
+        messages: messages
+      })
+    });
+
+    const tokensUsed = response.headers.get("X-Codete-Tokens-Used");
+    const tokensLeft = response.headers.get("X-Codete-Tokens-Left");
+
+    const data = await parseResponse(response);
+
+    let reply = "";
+
+    if (data.choices && data.choices.length > 0) {
+      reply = data.choices[0].message?.content || "";
+    } else {
+      reply = data.response || data.message || JSON.stringify(data);
+    }
+
+    responseBody.textContent = reply || "(Empty response)";
+
+    messages.push({
+      role: "assistant",
+      content: reply
+    });
+
+    if (tokensUsed !== null || tokensLeft !== null) {
+      updateStatus(
+        "Tokens used: " + (tokensUsed ?? "?") +
+        " · Remaining: " + (tokensLeft ?? "?")
+      );
+    }
+
+  } catch (error) {
+    responseBody.textContent = "Error: " + error.message;
+
+    // Remove the failed user message from the conversation
+    // so it is not resent on the next request.
+    messages.pop();
+
+    console.error(error);
+  } finally {
+    busy = false;
+    document.getElementById("send").disabled = false;
+    input.focus();
+  }
+}
+
+document.getElementById("send").onclick = sendMessage;
+
+/* =========================================================
+   AUTHENTICATION
+========================================================= */
+
+function openModal(title, content, buttons) {
+  document.getElementById("modalTitle").textContent = title;
+  document.getElementById("modalContent").innerHTML = content;
+  document.getElementById("modalButtons").innerHTML = "";
+
+  for (const button of buttons) {
+    const b = document.createElement("button");
+
+    b.textContent = button.label;
+    b.onclick = button.action;
+
+    document.getElementById("modalButtons").appendChild(b);
+  }
+
+  document.getElementById("modal").style.display = "flex";
+}
+
+function closeModal() {
+  document.getElementById("modal").style.display = "none";
+}
+
+function openAuth(mode = "signin") {
+  const signup = mode === "signup";
+
+  openModal(
+    signup ? "Create account" : "Sign in",
+    `
+      <input id="authUsername" placeholder="Username" autocomplete="username">
+      <input id="authPassword" type="password" placeholder="Password" autocomplete="${signup ? "new-password" : "current-password"}">
+      <p id="modalNote">
+        Authentication is handled by the Codete gateway.
+      </p>
+    `,
+    [
+      {
+        label: signup ? "Sign up" : "Sign in",
+        action: submitAuth
+      },
+      {
+        label: signup ? "Switch to sign in" : "Create account",
+        action: () => openAuth(signup ? "signin" : "signup")
+      },
+      {
+        label: "Cancel",
+        action: closeModal
+      }
+    ]
+  );
+
+  document.getElementById("authUsername").focus();
+}
+
+async function submitAuth() {
+  const username = document.getElementById("authUsername").value.trim();
+  const password = document.getElementById("authPassword").value;
+
+  if (!username || !password) {
+    alert("Enter your username and password.");
+    return;
+  }
+
+  const signupMode =
+    document.getElementById("modalTitle").textContent === "Create account";
+
+  const endpoint = signupMode ? "auth/signup" : "auth/signin";
+
+  try {
+    const response = await apiFetch(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({
+        username,
+        password
+      })
+    });
+
+    const data = await parseResponse(response);
+
+    const key =
+      data.api_key ||
+      data.token ||
+      data.access_token;
+
+    if (!key) {
+      throw new Error("The server did not return an API key.");
+    }
+
+    apiKey = key;
+    accountName = data.username || username;
+
+    sessionStorage.setItem("codete_api_key", apiKey);
+    sessionStorage.setItem("codete_account", accountName);
+
+    closeModal();
+    updateAccount();
+
+    alert("Successfully " + (signupMode ? "signed up" : "signed in") + ".");
+
+  } catch (error) {
+    alert(error.message);
+  }
+}
+
+function updateAccount() {
+  const button = document.getElementById("accountBtn");
+
+  if (apiKey) {
+    button.textContent = accountName || "Account";
+  } else {
+    button.textContent = "Sign in";
+  }
+}
+
+document.getElementById("accountBtn").onclick = () => {
+  if (apiKey) {
+    openModal(
+      "Account",
+      `<p>Signed in as <strong>${escapeHTML(accountName)}</strong></p>`,
+      [
+        {
+          label: "Sign out",
+          action: () => {
+            apiKey = "";
+            accountName = "";
+
+            sessionStorage.removeItem("codete_api_key");
+            sessionStorage.removeItem("codete_account");
+
+            updateAccount();
+            closeModal();
+          }
+        },
+        {
+          label: "Close",
+          action: closeModal
+        }
+      ]
+    );
+  } else {
+    openAuth("signin");
+  }
+};
+
+/* =========================================================
+   BACKEND SETTINGS
+========================================================= */
+
+function escapeHTML(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+function openSettings() {
+  const current = localStorage.getItem("codete_base") || "";
+
+  openModal(
+    "Backend settings",
+    `
+      <p id="modalNote">
+        Codete automatically discovers your gateway through relay.txt.
+        You can override it here if needed.
+      </p>
+      <input id="backendInput" placeholder="https://your-server.com" value="${escapeHTML(current)}">
+      <p id="modalNote">
+        Enter the gateway root URL. /v1 is automatically handled.
+        Leave blank to use relay discovery.
+      </p>
+    `,
+    [
+      {
+        label: "Save",
+        action: saveSettings
+      },
+      {
+        label: "Reset to relay",
+        action: resetSettings
+      },
+      {
+        label: "Cancel",
+        action: closeModal
+      }
+    ]
+  );
+}
+
+function saveSettings() {
+  const value = document.getElementById("backendInput").value.trim();
+
+  if (!value) {
+    localStorage.removeItem("codete_base");
+    closeModal();
+    discoverBackend();
+    return;
+  }
+
+  try {
+    const url = new URL(value);
+
+    if (url.protocol !== "https:" && url.protocol !== "http:") {
+      throw new Error("Invalid protocol");
+    }
+
+    localStorage.setItem("codete_base", url.origin + url.pathname.replace(/\/+$/, ""));
+
+    closeModal();
+    showBackendStatus();
+
+  } catch {
+    alert("Please enter a valid HTTP or HTTPS backend URL.");
+  }
+}
+
+function resetSettings() {
+  localStorage.removeItem("codete_base");
+  closeModal();
+  discoverBackend();
+}
+
+document.getElementById("settingsBtn").onclick = openSettings;
+
+/* =========================================================
+   STARTUP
+========================================================= */
+
+updateAccount();
+
+if (localStorage.getItem("codete_base")) {
+  showBackendStatus();
+} else {
+  discoverBackend();
+}
 </script>
 </body>
 </html>
