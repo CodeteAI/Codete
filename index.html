@@ -9,9 +9,7 @@
 <style>
 :root {
   --bg: #09070f;
-  --bg2: #100b1c;
   --panel: #151020;
-  --panel2: #1d1530;
   --border: #302347;
   --text: #f1ecfa;
   --muted: #a69bbd;
@@ -22,9 +20,7 @@
   --redbg: #2b1018;
 }
 
-* {
-  box-sizing: border-box;
-}
+* { box-sizing: border-box; }
 
 body {
   margin: 0;
@@ -38,17 +34,12 @@ body {
   font-family: Inter, system-ui, -apple-system, Arial, sans-serif;
 }
 
-/* =========================================================
-   AMBIENT BACKGROUND
-========================================================= */
-
 body::before {
   content: "";
   position: fixed;
   inset: 0;
   pointer-events: none;
-  background:
-    radial-gradient(circle at 50% 0%, #8b5cf612, transparent 50%);
+  background: radial-gradient(circle at 50% 0%, #8b5cf612, transparent 50%);
 }
 
 #app {
@@ -57,9 +48,7 @@ body::before {
   flex-direction: column;
 }
 
-/* =========================================================
-   HEADER
-========================================================= */
+/* HEADER */
 
 header {
   height: 76px;
@@ -79,51 +68,13 @@ header {
   gap: 12px;
 }
 
-.logo {
-  width: 42px;
-  height: 42px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border-radius: 13px;
-  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
-  box-shadow: 0 0 22px #8b5cf633;
-  font-weight: 900;
-  font-size: 20px;
-  position: relative;
-  transition: transform .25s, box-shadow .25s;
-}
-
-.logo:hover {
-  transform: translateY(-3px) rotate(-5deg);
-  box-shadow: 0 0 35px #a78bfa88;
-}
-
-.logo::after {
-  content: "^^";
-  position: absolute;
-  font-size: 11px;
-  top: -12px;
-  opacity: 0;
-  transform: translateY(5px);
-  transition: .2s;
-  color: var(--purple3);
-}
-
-.logo:hover::after {
-  opacity: 1;
-  transform: translateY(0);
-}
-
 .brandName {
   font-size: 22px;
   font-weight: 800;
   letter-spacing: -.7px;
 }
 
-.brandName span {
-  color: var(--purple);
-}
+.brandName span { color: var(--purple); }
 
 .headerRight {
   display: flex;
@@ -131,27 +82,119 @@ header {
   gap: 12px;
 }
 
-#model {
+#model, #accountBtn {
   color: var(--text);
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 10px;
   padding: 10px 14px;
-  outline: none;
 }
 
-#accountBtn {
-  color: var(--text);
-  background: #1b1429;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 10px 14px;
-  cursor: pointer;
+#accountBtn { cursor: pointer; }
+
+/* ANIMATED ^^ ICON */
+
+.faceLogo {
+  width: 44px;
+  height: 44px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 14px;
+  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
+  box-shadow: 0 0 22px #8b5cf633;
+  transition: transform .25s, box-shadow .25s;
+  animation: logoFloat 4s ease-in-out infinite;
 }
 
-/* =========================================================
-   CHAT
-========================================================= */
+.faceLogo:hover {
+  transform: translateY(-3px) scale(1.07);
+  box-shadow: 0 0 35px #a78bfa88;
+}
+
+.face {
+  display: flex;
+  gap: 3px;
+  align-items: center;
+  transform: translateY(-1px);
+}
+
+.eye {
+  width: 7px;
+  height: 13px;
+  border-radius: 5px;
+  background: #fff;
+  transform: rotate(-12deg);
+  animation: eyeWiggle 3s ease-in-out infinite;
+}
+
+.eye:nth-child(2) {
+  transform: rotate(12deg);
+  animation-delay: .15s;
+}
+
+.faceLogo:hover .eye {
+  animation: eyeBounce .35s ease-in-out infinite alternate;
+}
+
+@keyframes logoFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
+}
+
+@keyframes eyeWiggle {
+  0%,100% { transform: rotate(-12deg); }
+  50% { transform: rotate(-5deg) translateY(-1px); }
+}
+
+@keyframes eyeBounce {
+  from { transform: translateY(0) rotate(-12deg); }
+  to { transform: translateY(-3px) rotate(-12deg); }
+}
+
+.miniLogo {
+  width: 27px;
+  height: 27px;
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
+  box-shadow: 0 0 12px #8b5cf622;
+  flex-shrink: 0;
+}
+
+.miniFace {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+}
+
+.miniEye {
+  width: 4px;
+  height: 8px;
+  border-radius: 4px;
+  background: white;
+  animation: miniWiggle 2.5s ease-in-out infinite;
+}
+
+.miniEye:nth-child(2) {
+  animation-delay: .12s;
+}
+
+@keyframes miniWiggle {
+  0%,100% { transform: rotate(-10deg); }
+  50% { transform: rotate(-3deg) translateY(-1px); }
+}
+
+.miniLogo:hover {
+  transform: rotate(-5deg) scale(1.12);
+  box-shadow: 0 0 18px #a78bfa66;
+}
+
+/* CHAT */
 
 #chat {
   flex: 1;
@@ -160,10 +203,7 @@ header {
   scroll-behavior: smooth;
 }
 
-#chat::-webkit-scrollbar {
-  width: 8px;
-}
-
+#chat::-webkit-scrollbar { width: 8px; }
 #chat::-webkit-scrollbar-thumb {
   background: #35234c;
   border-radius: 20px;
@@ -187,13 +227,13 @@ header {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32px;
-  font-weight: 900;
   background: linear-gradient(135deg, #8b5cf6, #4c1d95);
-  box-shadow:
-    0 0 40px #8b5cf633,
-    inset 0 0 20px #ffffff10;
-  animation: float 4s ease-in-out infinite;
+  box-shadow: 0 0 40px #8b5cf633;
+}
+
+.emptyLogo .eye {
+  width: 11px;
+  height: 20px;
 }
 
 #empty h1 {
@@ -202,18 +242,9 @@ header {
   margin-bottom: 10px;
 }
 
-#empty p {
-  color: var(--muted);
-}
+#empty p { color: var(--muted); }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-7px); }
-}
-
-/* =========================================================
-   MESSAGE ALIGNMENT
-========================================================= */
+/* MESSAGE ALIGNMENT */
 
 .messageRow {
   display: flex;
@@ -222,23 +253,12 @@ header {
   animation: appear .25s ease-out;
 }
 
-.messageRow.user {
-  justify-content: flex-end;
-}
-
-.messageRow.assistant {
-  justify-content: flex-start;
-}
+.messageRow.user { justify-content: flex-end; }
+.messageRow.assistant { justify-content: flex-start; }
 
 @keyframes appear {
-  from {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .message {
@@ -256,9 +276,7 @@ header {
   box-shadow: 0 8px 30px #00000015;
 }
 
-.assistant .message {
-  padding: 6px 4px;
-}
+.assistant .message { padding: 6px 4px; }
 
 .messageLabel {
   font-size: 12px;
@@ -268,9 +286,7 @@ header {
   letter-spacing: .4px;
 }
 
-.user .messageLabel {
-  text-align: right;
-}
+.user .messageLabel { text-align: right; }
 
 .assistant .messageLabel {
   display: flex;
@@ -278,28 +294,9 @@ header {
   gap: 9px;
 }
 
-.miniLogo {
-  width: 25px;
-  height: 25px;
-  border-radius: 8px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, #8b5cf6, #4c1d95);
-  color: white;
-  font-size: 12px;
-  font-weight: 900;
-  transition: .2s;
-}
+.messageBody { white-space: pre-wrap; }
 
-.miniLogo:hover {
-  transform: scale(1.15) rotate(8deg);
-  box-shadow: 0 0 18px #a78bfa66;
-}
-
-/* =========================================================
-   ERROR PANEL
-========================================================= */
+/* ERROR */
 
 .errorBlock {
   background: var(--redbg);
@@ -313,7 +310,6 @@ header {
   font-size: 13px;
   white-space: pre-wrap;
   overflow-wrap: anywhere;
-  box-shadow: 0 0 18px #ff334408;
 }
 
 .errorTitle {
@@ -323,9 +319,7 @@ header {
   font-family: system-ui, sans-serif;
 }
 
-/* =========================================================
-   THINKING
-========================================================= */
+/* THINKING */
 
 .thinking {
   color: var(--purple3);
@@ -347,22 +341,15 @@ header {
   animation: dot 1.2s infinite;
 }
 
-.thinkingDots span:nth-child(2) {
-  animation-delay: .2s;
-}
-
-.thinkingDots span:nth-child(3) {
-  animation-delay: .4s;
-}
+.thinkingDots span:nth-child(2) { animation-delay: .2s; }
+.thinkingDots span:nth-child(3) { animation-delay: .4s; }
 
 @keyframes dot {
-  0%, 80%, 100% { opacity: .3; transform: translateY(0); }
+  0%,80%,100% { opacity: .3; transform: translateY(0); }
   40% { opacity: 1; transform: translateY(-4px); }
 }
 
-/* =========================================================
-   COMPOSER
-========================================================= */
+/* COMPOSER */
 
 #composerArea {
   padding: 18px 5% 25px;
@@ -401,9 +388,7 @@ header {
   font-size: 15px;
 }
 
-#input::placeholder {
-  color: #81758f;
-}
+#input::placeholder { color: #81758f; }
 
 #send {
   width: 48px;
@@ -414,6 +399,7 @@ header {
   color: white;
   font-size: 20px;
   font-weight: 800;
+  cursor: pointer;
   transition: .2s;
 }
 
@@ -434,9 +420,7 @@ header {
   margin-top: 12px;
 }
 
-/* =========================================================
-   MODAL
-========================================================= */
+/* MODAL */
 
 #modal {
   position: fixed;
@@ -506,9 +490,7 @@ header {
   transition: .2s;
 }
 
-.modalButtons button:hover {
-  background: #33234c;
-}
+.modalButtons button:hover { background: #33234c; }
 
 .modalLink {
   background: none;
@@ -519,56 +501,31 @@ header {
   text-decoration: underline;
 }
 
-/* =========================================================
-   RESPONSIVE
-========================================================= */
+/* RESPONSIVE */
 
 @media(max-width:700px) {
-  header {
-    padding: 0 12px;
-    height: 68px;
-  }
-
-  .brandName {
-    font-size: 18px;
-  }
-
-  .logo {
-    width: 36px;
-    height: 36px;
-  }
-
-  #model {
-    max-width: 155px;
-    padding: 8px;
-  }
-
-  #chat {
-    padding: 20px 15px;
-  }
-
-  .message {
-    max-width: 95%;
-  }
-
-  #composerArea {
-    padding: 12px 12px 20px;
-  }
-
-  #empty h1 {
-    font-size: 27px;
-  }
+  header { padding: 0 12px; height: 68px; }
+  .brandName { font-size: 18px; }
+  #model { max-width: 155px; padding: 8px; }
+  #chat { padding: 20px 15px; }
+  .message { max-width: 95%; }
+  #composerArea { padding: 12px 12px 20px; }
+  #empty h1 { font-size: 27px; }
 }
 </style>
 </head>
 
 <body>
-
 <div id="app">
 
 <header>
   <div class="brand">
-    <div class="logo" title="Codete">C</div>
+    <div class="faceLogo" title="Codete">
+      <div class="face">
+        <span class="eye"></span>
+        <span class="eye"></span>
+      </div>
+    </div>
     <div class="brandName">Code<span>te</span></div>
   </div>
 
@@ -577,19 +534,21 @@ header {
       <option value="Codete 1.0">Codete 1.0</option>
       <option value="Codete Advanced 1.0">Codete Advanced 1.0</option>
     </select>
-
     <button id="accountBtn">Sign in</button>
   </div>
 </header>
 
 <section id="chat">
-
   <div id="empty">
-    <div class="emptyLogo">C</div>
+    <div class="emptyLogo">
+      <div class="face">
+        <span class="eye"></span>
+        <span class="eye"></span>
+      </div>
+    </div>
     <h1>Where should we begin?</h1>
     <p>Build, explore, debug, and create with Codete.</p>
   </div>
-
 </section>
 
 <div id="composerArea">
@@ -612,9 +571,7 @@ header {
 </div>
 
 <script>
-/* =========================================================
-   CONFIGURATION
-========================================================= */
+/* CONFIGURATION */
 
 const RELAY_URL =
   "https://raw.githubusercontent.com/CodeteAI/Codete/refs/heads/main/relay.txt";
@@ -625,17 +582,12 @@ let accountName = sessionStorage.getItem("codete_account") || "";
 let messages = [];
 let busy = false;
 
-/* =========================================================
-   BACKEND
-========================================================= */
+/* BACKEND */
 
 function normalizeBackend(url) {
   url = (url || "").trim().replace(/\/+$/, "");
-
   if (!url) return "";
-
   url = url.replace(/\/v1$/i, "");
-
   return url + "/v1";
 }
 
@@ -643,17 +595,9 @@ function base() {
   return normalizeBackend(discoveredBackend);
 }
 
-function updateStatus(text) {
-  console.log("Codete:", text);
-}
-
 async function discoverBackend() {
-  updateStatus("Discovering backend");
-
   try {
-    const response = await fetch(RELAY_URL, {
-      cache: "no-store"
-    });
+    const response = await fetch(RELAY_URL, { cache: "no-store" });
 
     if (!response.ok) {
       throw new Error("Relay HTTP " + response.status);
@@ -661,98 +605,65 @@ async function discoverBackend() {
 
     const relayText = (await response.text()).trim();
 
-    if (!relayText) {
-      throw new Error("Relay file is empty");
-    }
-
-    if (relayText.includes("/relay.txt")) {
-      throw new Error("Relay file contains an invalid backend URL");
-    }
+    if (!relayText) throw new Error("Relay file is empty");
 
     discoveredBackend = relayText.replace(/\/+$/, "");
 
-    console.log("Backend discovered:", base());
-
+    console.log("Codete backend:", base());
   } catch (error) {
     console.error("Relay discovery failed:", error);
-    updateStatus("Relay discovery failed");
   }
 }
 
-/* =========================================================
-   API HELPER
-========================================================= */
+/* API HELPER */
 
 async function apiFetch(path, options = {}) {
-  if (!base()) {
-    throw new Error("Backend is not available yet.");
-  }
+  if (!base()) throw new Error("Backend is not available yet.");
 
   const url = base() + "/" + path.replace(/^\/+/, "");
-
   const headers = new Headers(options.headers || {});
 
-  if (apiKey) {
-    headers.set("Authorization", "Bearer " + apiKey);
-  }
+  if (apiKey) headers.set("Authorization", "Bearer " + apiKey);
 
   if (options.body && !headers.has("Content-Type")) {
     headers.set("Content-Type", "application/json");
   }
 
   try {
-    return await fetch(url, {
-      ...options,
-      headers
-    });
+    return await fetch(url, { ...options, headers });
   } catch (error) {
     if (error instanceof TypeError) {
-      throw new Error(
-        "Network or CORS error. The gateway may be unavailable."
-      );
+      throw new Error("Network or CORS error. The gateway may be unavailable.");
     }
-
     throw error;
   }
 }
 
-/* =========================================================
-   ERROR PARSING
-========================================================= */
+/* ERROR PARSING */
 
 function extractError(data) {
   if (!data) return "Unknown error";
-
-  if (typeof data === "string") {
-    return data;
-  }
+  if (typeof data === "string") return data;
 
   if (data.detail) {
-    if (typeof data.detail === "string") {
-      return data.detail;
-    }
-
-    return JSON.stringify(data.detail, null, 2);
+    return typeof data.detail === "string"
+      ? data.detail
+      : JSON.stringify(data.detail, null, 2);
   }
 
   if (data.error) {
-    if (typeof data.error === "string") {
-      return data.error;
-    }
-
-    return JSON.stringify(data.error, null, 2);
+    return typeof data.error === "string"
+      ? data.error
+      : JSON.stringify(data.error, null, 2);
   }
 
-  if (data.message) {
-    return data.message;
-  }
+  if (data.message) return data.message;
 
   return JSON.stringify(data, null, 2);
 }
 
 async function parseResponse(response) {
   const text = await response.text();
-
   let data;
 
   try {
@@ -761,30 +672,22 @@ async function parseResponse(response) {
     data = { detail: text };
   }
 
-  if (!response.ok) {
-    throw new Error(extractError(data));
-  }
+  if (!response.ok) throw new Error(extractError(data));
 
   return data;
 }
 
-/* =========================================================
-   MESSAGE RENDERING
-========================================================= */
+/* RENDERING */
 
 function removeEmpty() {
   const empty = document.getElementById("empty");
-
-  if (empty) {
-    empty.remove();
-  }
+  if (empty) empty.remove();
 }
 
 function createMessage(role, content = "") {
   removeEmpty();
 
   const chat = document.getElementById("chat");
-
   const row = document.createElement("div");
   row.className = "messageRow " + role;
 
@@ -799,33 +702,35 @@ function createMessage(role, content = "") {
   } else {
     const icon = document.createElement("div");
     icon.className = "miniLogo";
-    icon.textContent = "C";
-    icon.title = "Codete";
+
+    const face = document.createElement("div");
+    face.className = "miniFace";
+
+    for (let i = 0; i < 2; i++) {
+      const eye = document.createElement("span");
+      eye.className = "miniEye";
+      face.appendChild(eye);
+    }
+
+    icon.appendChild(face);
 
     const name = document.createElement("span");
     name.textContent = "Codete";
 
-    label.appendChild(icon);
-    label.appendChild(name);
+    label.append(icon, name);
   }
 
   const body = document.createElement("div");
   body.className = "messageBody";
   body.textContent = content;
 
-  box.appendChild(label);
-  box.appendChild(body);
-
+  box.append(label, body);
   row.appendChild(box);
   chat.appendChild(row);
 
   chat.scrollTop = chat.scrollHeight;
 
-  return {
-    row,
-    box,
-    body
-  };
+  return { row, box, body };
 }
 
 function addMessage(role, content) {
@@ -845,18 +750,14 @@ function addErrorMessage(messageObject, errorText) {
   const text = document.createElement("div");
   text.textContent = errorText;
 
-  error.appendChild(title);
-  error.appendChild(text);
-
+  error.append(title, text);
   messageObject.body.appendChild(error);
 
   document.getElementById("chat").scrollTop =
     document.getElementById("chat").scrollHeight;
 }
 
-/* =========================================================
-   THINKING INDICATOR
-========================================================= */
+/* THINKING */
 
 function showThinking(messageObject) {
   messageObject.body.textContent = "";
@@ -875,22 +776,23 @@ function showThinking(messageObject) {
     dots.appendChild(dot);
   }
 
-  thinking.appendChild(text);
-  thinking.appendChild(dots);
-
+  thinking.append(text, dots);
   messageObject.body.appendChild(thinking);
 }
 
-/* =========================================================
-   CHAT
-========================================================= */
+/* CHAT */
 
 function newChat() {
   messages = [];
 
   document.getElementById("chat").innerHTML = `
     <div id="empty">
-      <div class="emptyLogo">C</div>
+      <div class="emptyLogo">
+        <div class="face">
+          <span class="eye"></span>
+          <span class="eye"></span>
+        </div>
+      </div>
       <h1>Where should we begin?</h1>
       <p>Build, explore, debug, and create with Codete.</p>
     </div>
@@ -915,7 +817,6 @@ async function sendMessage() {
   if (busy) return;
 
   const text = input.value.trim();
-
   if (!text) return;
 
   if (!apiKey) {
@@ -935,11 +836,7 @@ async function sendMessage() {
   input.style.height = "auto";
 
   addMessage("user", text);
-
-  messages.push({
-    role: "user",
-    content: text
-  });
+  messages.push({ role: "user", content: text });
 
   const assistantMessage = createMessage("assistant");
   showThinking(assistantMessage);
@@ -968,28 +865,14 @@ async function sendMessage() {
 
     assistantMessage.body.textContent = reply || "(Empty response)";
 
-    messages.push({
-      role: "assistant",
-      content: reply
-    });
+    messages.push({ role: "assistant", content: reply });
 
-    if (tokensUsed !== null || tokensLeft !== null) {
-      updateStatus(
-        "Tokens used: " + (tokensUsed ?? "?") +
-        " · Remaining: " + (tokensLeft ?? "?")
-      );
-    }
+    console.log("Tokens used:", tokensUsed, "Remaining:", tokensLeft);
 
   } catch (error) {
-    const errorText = error.message || String(error);
-
-    addErrorMessage(assistantMessage, errorText);
-
-    // Do not preserve failed requests in conversation history.
+    addErrorMessage(assistantMessage, error.message || String(error));
     messages.pop();
-
     console.error(error);
-
   } finally {
     busy = false;
     document.getElementById("send").disabled = false;
@@ -999,9 +882,7 @@ async function sendMessage() {
 
 document.getElementById("send").onclick = sendMessage;
 
-/* =========================================================
-   AUTH MODAL
-========================================================= */
+/* MODAL */
 
 function openModal(title, content, buttons, linkContent = "") {
   document.getElementById("modalTitle").textContent = title;
@@ -1015,7 +896,6 @@ function openModal(title, content, buttons, linkContent = "") {
     const b = document.createElement("button");
     b.textContent = button.label;
     b.onclick = button.action;
-
     buttonArea.appendChild(b);
   }
 
@@ -1026,57 +906,34 @@ function closeModal() {
   document.getElementById("modal").style.display = "none";
 }
 
+/* AUTH */
+
 function openAuth(mode = "signin") {
   const signup = mode === "signup";
 
   openModal(
     signup ? "Create account" : "Sign in",
     `
-      <input
-        id="authEmail"
-        type="email"
-        placeholder="Email address"
-        autocomplete="email"
-      >
-
-      <input
-        id="authPassword"
-        type="password"
-        placeholder="Password"
-        autocomplete="${signup ? "new-password" : "current-password"}"
-      >
-
-      <p id="modalNote">
-        Authentication is handled by the Codete gateway.
-      </p>
+      <input id="authEmail" type="email" placeholder="Email address" autocomplete="email">
+      <input id="authPassword" type="password" placeholder="Password"
+        autocomplete="${signup ? "new-password" : "current-password"}">
+      <p id="modalNote">Authentication is handled by the Codete gateway.</p>
     `,
     [
-      {
-        label: signup ? "Sign up" : "Sign in",
-        action: submitAuth
-      },
+      { label: signup ? "Sign up" : "Sign in", action: submitAuth },
       {
         label: signup ? "Switch to sign in" : "Create account",
         action: () => openAuth(signup ? "signin" : "signup")
       },
-      {
-        label: "Cancel",
-        action: closeModal
-      }
+      { label: "Cancel", action: closeModal }
     ],
     signup ? "" : `
-      <button class="modalLink" onclick="openForgotPassword()">
-        Forgot password?
-      </button>
+      <button class="modalLink" onclick="openForgotPassword()">Forgot password?</button>
     `
   );
 
   document.getElementById("authEmail").focus();
 }
-
-/* =========================================================
-   SIGNUP / SIGNIN
-========================================================= */
 
 async function submitAuth() {
   const email = document.getElementById("authEmail").value.trim();
@@ -1095,27 +952,19 @@ async function submitAuth() {
   const signupMode =
     document.getElementById("modalTitle").textContent === "Create account";
 
-  const endpoint = signupMode ? "auth/signup" : "auth/signin";
-
   try {
-    const response = await apiFetch(endpoint, {
-      method: "POST",
-      body: JSON.stringify({
-        email: email,
-        password: password
-      })
-    });
+    const response = await apiFetch(
+      signupMode ? "auth/signup" : "auth/signin",
+      {
+        method: "POST",
+        body: JSON.stringify({ email, password })
+      }
+    );
 
     const data = await parseResponse(response);
+    const key = data.api_key || data.token || data.access_token;
 
-    const key =
-      data.api_key ||
-      data.token ||
-      data.access_token;
-
-    if (!key) {
-      throw new Error("Server did not return an API key.");
-    }
+    if (!key) throw new Error("Server did not return an API key.");
 
     apiKey = key;
     accountName = data.email || email;
@@ -1125,45 +974,28 @@ async function submitAuth() {
 
     closeModal();
     updateAccount();
-
   } catch (error) {
     alert(error.message);
   }
 }
 
-/* =========================================================
-   PASSWORD RECOVERY
-========================================================= */
+/* PASSWORD RECOVERY
+   This endpoint must be implemented in the gateway.
+*/
 
 function openForgotPassword() {
   openModal(
     "Reset password",
     `
-      <input
-        id="recoveryEmail"
-        type="email"
-        placeholder="Account email"
-        autocomplete="email"
-      >
-
+      <input id="recoveryEmail" type="email" placeholder="Account email">
       <p id="modalNote">
-        PlayFab will handle password recovery if it is configured
-        for your account.
+        Password recovery is handled by the Codete gateway.
       </p>
     `,
     [
-      {
-        label: "Send recovery email",
-        action: sendRecoveryEmail
-      },
-      {
-        label: "Back to sign in",
-        action: () => openAuth("signin")
-      },
-      {
-        label: "Cancel",
-        action: closeModal
-      }
+      { label: "Send recovery email", action: sendRecoveryEmail },
+      { label: "Back to sign in", action: () => openAuth("signin") },
+      { label: "Cancel", action: closeModal }
     ]
   );
 
@@ -1178,43 +1010,26 @@ async function sendRecoveryEmail() {
     return;
   }
 
-  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-    alert("Please enter a valid email address.");
-    return;
-  }
-
   try {
     const response = await apiFetch("auth/forgot-password", {
       method: "POST",
-      body: JSON.stringify({
-        email: email
-      })
+      body: JSON.stringify({ email })
     });
 
     const data = await parseResponse(response);
-
     closeModal();
 
-    alert(
-      data.message ||
-      "If an account is associated with that email, a recovery email may be sent."
-    );
-
+    alert(data.message || "Recovery request submitted.");
   } catch (error) {
     alert(error.message);
   }
 }
 
-/* =========================================================
-   ACCOUNT
-========================================================= */
+/* ACCOUNT */
 
 function updateAccount() {
-  const button = document.getElementById("accountBtn");
-
-  button.textContent = apiKey
-    ? accountName || "Account"
-    : "Sign in";
+  document.getElementById("accountBtn").textContent =
+    apiKey ? accountName || "Account" : "Sign in";
 }
 
 document.getElementById("accountBtn").onclick = () => {
@@ -1240,17 +1055,12 @@ document.getElementById("accountBtn").onclick = () => {
           closeModal();
         }
       },
-      {
-        label: "Close",
-        action: closeModal
-      }
+      { label: "Close", action: closeModal }
     ]
   );
 };
 
-/* =========================================================
-   HTML ESCAPING
-========================================================= */
+/* ESCAPING */
 
 function escapeHTML(text) {
   return String(text)
@@ -1261,13 +1071,10 @@ function escapeHTML(text) {
     .replaceAll("'", "&#039;");
 }
 
-/* =========================================================
-   STARTUP
-========================================================= */
+/* STARTUP */
 
 updateAccount();
 discoverBackend();
-
 </script>
 </body>
 </html>
